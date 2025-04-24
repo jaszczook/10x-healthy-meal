@@ -1,0 +1,42 @@
+---
+description: 
+globs: 
+alwaysApply: true
+---
+# AI Rules for 10x-healthy-meal
+
+{project-description}
+
+## Tech Stack
+
+- Angular 19
+- Angular Material
+- TypeScript 5
+- Tailwind 4
+
+## Project Structure
+
+When introducing changes to the project, always follow the directory structure below:
+
+- `./src` - source code
+- `./src/db` - Supabase clients and types
+- `./src/types` - Shared types for backend and frontend (Entities, DTOs)
+- `./src/lib` - Services and helpers 
+- `./src/assets` - Static internal assets
+- `./public` - Public assets
+
+When modifying the directory structure, always update this section.
+
+## Coding practices
+
+### Guidelines for clean code
+
+- Use feedback from linters to improve the code when making changes.
+- Prioritize error handling and edge cases.
+- Handle errors and edge cases at the beginning of functions.
+- Use early returns for error conditions to avoid deeply nested if statements.
+- Place the happy path last in the function for improved readability.
+- Avoid unnecessary else statements; use if-return pattern instead.
+- Use guard clauses to handle preconditions and invalid states early.
+- Implement proper error logging and user-friendly error messages.
+- Consider using custom error types or error factories for consistent error handling.
