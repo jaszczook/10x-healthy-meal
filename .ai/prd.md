@@ -12,10 +12,8 @@ Dostępne w sieci przepisy często nie spełniają indywidualnych wymagań diete
   - wklejenie niesformatowanego przepisu → analiza AI → struktura JSON ze składnikami, ilościami, jednostkami, krokami, notatkami, kaloriami
   - edycja wszystkich pól JSON
   - zapisywanie, odczytywanie, przeglądanie i usuwanie przepisów
-- walidacja jednostek miar według zdefiniowanej listy (`g`, `ml`, `szt.`, `łyżki`, itp.)
-- pole `porcje` przyjmujące tylko liczby całkowite od 1 do 16 oraz automatyczne skalowanie składników i kalorii
 - ekran podsumowania przepisu z listą składników i łączną wartością kaloryczną przed zapisem
-- obsługa błędów AI: timeout 60 s, komunikat „Spróbuj ponownie” i możliwość ponownego przetworzenia
+- minimalna obsługa błędów AI: timeout 60 s, podstawowy komunikat o błędzie
 - logowanie błędów AI w tabeli `error_logs` z `user_id` i `timestamp`
 - integracja z prostym API kalorycznym, tolerancja estymacji kalorii ±10%
 
@@ -62,45 +60,23 @@ W zakresie MVP nie będzie:
   - timeout AI to 60 s, po przekroczeniu wyświetla się komunikat o błędzie
 
 - ID: US-004  
-  Tytuł: Obsługa błędów AI i ponowne przetwarzanie  
-  Opis: Jeśli AI zwróci błąd lub przekroczony zostanie timeout, użytkownik otrzymuje komunikat i może ponowić próbę.  
-  Kryteria akceptacji:  
-  - w przypadku błędu lub timeout wyświetla się komunikat „Spróbuj ponownie”  
-  - przyciskiem „Ponów” użytkownik uruchamia kolejną sesję AI  
-  - każde nieudane wywołanie jest logowane w `error_logs` z `user_id` i `timestamp`
-
-- ID: US-005  
   Tytuł: Edycja wygenerowanego JSON  
   Opis: Użytkownik może modyfikować wszystkie pola JSON przed zapisaniem przepisu.  
   Kryteria akceptacji:  
   - edycja składników, ilości, jednostek, kroków i notatek jest możliwa w formularzu  
-  - zmiany są walidowane (ilości >0, jednostki z listy)  
+  - zmiany są walidowane (ilości >0)  
+  - jednostki miar są akceptowane w dowolnym formacie tekstowym  
   - po zatwierdzeniu aktualizowany jest podgląd podsumowania
 
-- ID: US-006  
-  Tytuł: Walidacja jednostek miar  
-  Opis: System sprawdza poprawność wprowadzonych jednostek miar według zdefiniowanej listy.  
-  Kryteria akceptacji:  
-  - lista dozwolonych jednostek: `g`, `ml`, `szt.`, `łyżki`, `łyżeczki`  
-  - przy niepoprawnej jednostce formularz wyświetla komunikat i nie pozwala przejść dalej
-
-- ID: US-007  
-  Tytuł: Skalowanie porcji  
-  Opis: Użytkownik ustawia liczbę porcji (1–16), a system automatycznie przelicza ilości składników i kalorie.  
-  Kryteria akceptacji:  
-  - pole `porcje` przyjmuje tylko liczby całkowite od 1 do 16  
-  - zmiana wartości powoduje przeliczenie ilości i kalorii w czasie rzeczywistym  
-  - przy próbie wpisania wartości spoza zakresu pojawia się komunikat walidacji
-
-- ID: US-008  
+- ID: US-005  
   Tytuł: Ekran podsumowania przepisu  
-  Opis: Użytkownik widzi listę składników z przeliczonymi ilościami i łączną wartością kaloryczną przed finalnym zapisem.  
+  Opis: Użytkownik widzi listę składników i łączną wartość kaloryczną przed finalnym zapisem.  
   Kryteria akceptacji:  
   - wyświetlana jest tabela składników i suma kalorii  
   - przycisk „Zapisz” dodaje przepis do bazy danych  
   - przycisk „Anuluj” wraca do edycji JSON
 
-- ID: US-009  
+- ID: US-006  
   Tytuł: Zapisanie nowego przepisu  
   Opis: Po zatwierdzeniu podsumowania nowy przepis jest zapisywany w bazie i pojawia się na liście przepisów.  
   Kryteria akceptacji:  
@@ -108,21 +84,21 @@ W zakresie MVP nie będzie:
   - użytkownik widzi potwierdzenie sukcesu  
   - nowy przepis pojawia się w widoku listy
 
-- ID: US-010  
+- ID: US-007  
   Tytuł: Przeglądanie zapisanych przepisów  
   Opis: Użytkownik widzi listę wszystkich swoich przepisów, może otworzyć szczegóły.  
   Kryteria akceptacji:  
   - widok listy zawiera tytuł przepisu, datę utworzenia i skrócone podsumowanie kalorii  
   - kliknięcie przepisu otwiera stronę ze szczegółami i możliwością edycji
 
-- ID: US-011  
+- ID: US-008  
   Tytuł: Usuwanie przepisu  
   Opis: Użytkownik może usunąć zapisany przepis z potwierdzeniem akcji.  
   Kryteria akceptacji:  
   - przycisk „Usuń” przy każdym przepisie wyświetla okno potwierdzenia  
   - po potwierdzeniu przepis jest usuwany, a lista odświeżana
 
-- ID: US-012  
+- ID: US-009  
   Tytuł: Kontrola dostępu do przepisów  
   Opis: Tylko właściciel przepisu może go przeglądać, edytować lub usuwać.  
   Kryteria akceptacji:  
