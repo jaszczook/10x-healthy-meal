@@ -1,59 +1,122 @@
 # 10xHealthyMeal
 
-This project was generated using [Angular CLI](https://github.com/angular/angular-cli) version 19.2.9.
+AI-powered recipe management platform for personalized meal planning and nutritional tracking.
 
-## Development server
+## Table of Contents
+- [Project Description](#project-description)
+- [Tech Stack](#tech-stack)
+- [Getting Started](#getting-started)
+- [Available Scripts](#available-scripts)
+- [Project Scope](#project-scope)
+- [Project Status](#project-status)
+- [License](#license)
 
-To start a local development server, run:
+## Project Description
 
+HealthyMeal is a web-based tool that helps users store and personalize recipes using AI while considering their dietary preferences. The platform allows users to paste unformatted recipes, which are then processed into structured JSON format, enabling easy editing, portion scaling, and nutritional analysis before final saving.
+
+### Key Features
+- User authentication and profile management
+- AI-powered recipe parsing and structuring
+- Dietary preference tracking (allergies, intolerances, calorie goals)
+- Recipe CRUD operations with nutritional analysis
+- Calorie estimation with ±10% accuracy tolerance
+
+## Tech Stack
+
+### Frontend
+- Angular 19
+- TypeScript 5
+- Tailwind 4
+- Angular Material
+
+### Backend
+- Supabase
+  - PostgreSQL database
+  - Authentication
+  - Backend-as-a-Service SDK
+
+### AI Integration
+- Openrouter.ai for AI model access
+- Support for multiple AI providers (OpenAI, Anthropic, Google)
+
+### Infrastructure
+- GitHub Actions for CI/CD
+- DigitalOcean for hosting
+- Docker containerization
+
+## Getting Started
+
+### Prerequisites
+- Node.js (version specified in .nvmrc)
+- npm or yarn
+- Supabase account
+- Openrouter.ai API key
+
+### Installation
+1. Clone the repository
 ```bash
-ng serve
+git clone https://github.com/your-username/healthy-meal.git
+cd healthy-meal
 ```
 
-Once the server is running, open your browser and navigate to `http://localhost:4200/`. The application will automatically reload whenever you modify any of the source files.
-
-## Code scaffolding
-
-Angular CLI includes powerful code scaffolding tools. To generate a new component, run:
-
+2. Install dependencies
 ```bash
-ng generate component component-name
+npm install
 ```
 
-For a complete list of available schematics (such as `components`, `directives`, or `pipes`), run:
-
-```bash
-ng generate --help
+3. Set up environment variables
+Create a `.env` file in the root directory with the following variables:
+```
+SUPABASE_URL=your_supabase_url
+SUPABASE_ANON_KEY=your_supabase_anon_key
+OPENROUTER_API_KEY=your_openrouter_api_key
 ```
 
-## Building
-
-To build the project run:
-
+4. Start the development server
 ```bash
-ng build
+npm start
 ```
 
-This will compile your project and store the build artifacts in the `dist/` directory. By default, the production build optimizes your application for performance and speed.
+## Available Scripts
 
-## Running unit tests
+- `npm start` - Start the development server
+- `npm run build` - Build the application for production
+- `npm test` - Run tests
+- `npm run lint` - Run linting
+- `npm run format` - Format code
 
-To execute unit tests with the [Karma](https://karma-runner.github.io) test runner, use the following command:
+## Project Scope
 
-```bash
-ng test
-```
+### MVP Features
+- User authentication and session management
+- Recipe CRUD operations
+- AI-powered recipe parsing
+- Nutritional preference management
+- Calorie tracking and estimation
 
-## Running end-to-end tests
+### Current Limitations
+- No URL recipe import
+- No media support (images, videos)
+- No recipe sharing
+- No social features
+- No JSON export/import
+- No schema versioning
+- No email notifications
+- No pre-release usability testing
 
-For end-to-end (e2e) testing, run:
+## Project Status
 
-```bash
-ng e2e
-```
+### Development Phase
+The project is currently in active development, focusing on implementing core MVP features.
 
-Angular CLI does not come with an end-to-end testing framework by default. You can choose one that suits your needs.
+### Success Metrics
+- 90% of active users with completed dietary preferences
+- 75% weekly recipe generation rate
+- AI response time ≤60s in 95% of cases
+- Calorie estimation accuracy within ±10%
+- AI error rate <5% of all calls
 
-## Additional Resources
+## License
 
-For more information on using the Angular CLI, including detailed command references, visit the [Angular CLI Overview and Command Reference](https://angular.dev/tools/cli) page.
+This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
