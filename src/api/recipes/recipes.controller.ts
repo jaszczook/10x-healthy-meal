@@ -4,22 +4,18 @@ import { RecipesService } from '../../lib/services/recipes.service';
 import { ValidationService } from '../../lib/services/validation.service';
 import { ErrorLogService } from '../../lib/services/error-log.service';
 import { RecipesListResponseDto } from '../../types/dto';
-import { createClient } from '@supabase/supabase-js';
+import { SupabaseService } from '../../lib/supabase/supabase.service';
 
 @Injectable({
   providedIn: 'root'
 })
 export class RecipesApiController {
-  private supabase = createClient(
-    process.env['SUPABASE_URL'] || '',
-    process.env['SUPABASE_ANON_KEY'] || ''
-  );
-
   constructor(
     private router: Router,
     private recipesService: RecipesService,
     private validationService: ValidationService,
-    private errorLogService: ErrorLogService
+    private errorLogService: ErrorLogService,
+    private supabaseService: SupabaseService
   ) {}
 
   async getRecipes(
@@ -30,15 +26,7 @@ export class RecipesApiController {
     search?: string
   ): Promise<RecipesListResponseDto> {
     try {
-      // Get current user from Supabase session
-      const { data: { session }, error: sessionError } = await this.supabase.auth.getSession();
-      
-      if (sessionError || !session) {
-        this.router.navigate(['/auth/login']);
-        throw new Error('Unauthorized');
-      }
-
-      const userId = session.user.id;
+      const userId = await this.supabaseService.getCurrentUserId();
 
       // Parse and validate query parameters
       const parsedPage = page ? parseInt(page, 10) : 1;
@@ -67,7 +55,7 @@ export class RecipesApiController {
       await this.errorLogService.logError(null, error);
 
       // Rethrow with appropriate status code
-      if (error instanceof Error && error.message === 'Unauthorized') {
+      if (error instanceof Error && error.message === 'Not authenticated') {
         this.router.navigate(['/auth/login']);
         throw new Error('401 Unauthorized');
       }

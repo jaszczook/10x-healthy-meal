@@ -18,4 +18,16 @@ export class SupabaseService {
   get client(): SupabaseClient {
     return this.supabase;
   }
+
+  async getCurrentUserId(): Promise<string> {
+    if (!environment.production) {
+      return environment.testUserId;
+    }
+
+    const { data: { session }, error } = await this.supabase.auth.getSession();
+    if (error || !session) {
+      throw new Error('Not authenticated');
+    }
+    return session.user.id;
+  }
 } 
