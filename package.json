@@ -4,6 +4,7 @@
   "scripts": {
     "ng": "ng",
     "start": "ng serve",
+    "start-ssr": "npm run serve:ssr:10x-healthy-meal",
     "build": "ng build",
     "watch": "ng build --watch --configuration development",
     "test": "ng test",
