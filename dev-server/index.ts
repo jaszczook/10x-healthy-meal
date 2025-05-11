@@ -1,4 +1,5 @@
 import express from 'express';
+import healthRoutes from '../src/api/recipes/health.routes';
 import recipesRoutes from '../src/api/recipes/recipes.routes';
 
 const app = express();
@@ -8,6 +9,7 @@ const port = process.env['PORT'] || 3000;
 app.use(express.json());
 
 // Mount routes
+app.use('/api/health', healthRoutes);
 app.use('/api/recipes', recipesRoutes);
 
 app.listen(port, () => {
