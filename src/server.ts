@@ -7,7 +7,7 @@ import {
 import express from 'express';
 import { dirname, resolve } from 'node:path';
 import { fileURLToPath } from 'node:url';
-import routes from './routes';
+import health from './api/recipes/health.routes';
 import recipesRoutes from './api/recipes/recipes.routes';
 
 const serverDistFolder = dirname(fileURLToPath(import.meta.url));
@@ -27,7 +27,7 @@ const angularApp = new AngularNodeAppEngine();
  * });
  * ```
  */
-app.use('/api', routes);
+app.use('/api/health', health);
 app.use('/api/recipes', recipesRoutes);
 
 /**

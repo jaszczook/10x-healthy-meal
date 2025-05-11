@@ -1,5 +1,4 @@
 import express from 'express';
-import mealRoutes from '../src/routes';
 import recipesRoutes from '../src/api/recipes/recipes.routes';
 
 const app = express();
