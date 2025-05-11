@@ -4,11 +4,11 @@
   "scripts": {
     "ng": "ng",
     "start": "ng serve",
-    "start-ssr": "npm run serve:ssr:10x-healthy-meal",
     "build": "ng build",
     "watch": "ng build --watch --configuration development",
     "test": "ng test",
-    "serve:ssr:10x-healthy-meal": "node dist/10x-healthy-meal/server/server.mjs"
+    "serve:ssr:10x-healthy-meal": "node dist/10x-healthy-meal/server/server.mjs",
+    "dev:server": "ts-node-dev --project tsconfig.dev-server.json --respawn --transpile-only dev-server/index.ts"
   },
   "private": true,
   "dependencies": {
@@ -40,6 +40,7 @@
     "karma-coverage": "~2.2.0",
     "karma-jasmine": "~5.1.0",
     "karma-jasmine-html-reporter": "~2.1.0",
+    "ts-node-dev": "^2.0.0",
     "typescript": "~5.7.2"
   }
 }
