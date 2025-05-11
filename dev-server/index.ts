@@ -1,5 +1,6 @@
 import express from 'express';
 import mealRoutes from '../src/routes';
+import recipesRoutes from '../src/api/recipes/recipes.routes';
 
 const app = express();
 const port = process.env['PORT'] || 3000;
@@ -8,7 +9,7 @@ const port = process.env['PORT'] || 3000;
 app.use(express.json());
 
 // Mount routes
-app.use('/api', mealRoutes);
+app.use('/api/recipes', recipesRoutes);
 
 app.listen(port, () => {
   console.log(`Server is running on http://localhost:${port}`);

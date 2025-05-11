@@ -9,8 +9,8 @@ export class SupabaseService {
   private supabase: SupabaseClient;
 
   constructor() {
-    const supabaseUrl = environment.supabaseUrl || process.env['SUPABASE_URL'];
-    const supabaseKey = environment.supabaseKey || process.env['SUPABASE_ANON_KEY'];
+    const supabaseUrl = environment.supabaseUrl;
+    const supabaseKey = environment.supabaseKey;
 
     if (!supabaseUrl || !supabaseKey) {
       throw new Error('Supabase URL and key must be provided in environment variables or environment configuration');

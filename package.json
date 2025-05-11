@@ -7,8 +7,8 @@
     "build": "dotenv -e .env -- ng build",
     "watch": "dotenv -e .env -- ng build --watch --configuration development",
     "test": "ng test",
-    "serve:ssr:10x-healthy-meal": "node dist/10x-healthy-meal/server/server.mjs",
-    "dev:server": "ts-node-dev --project tsconfig.dev-server.json --respawn --transpile-only dev-server/index.ts"
+    "serve:ssr:10x-healthy-meal": "dotenv -e .env -- node dist/10x-healthy-meal/server/server.mjs",
+    "dev:server": "dotenv -e .env -- ts-node-dev --project tsconfig.dev-server.json --respawn --transpile-only dev-server/index.ts"
   },
   "private": true,
   "dependencies": {
@@ -34,6 +34,7 @@
     "@types/express": "^4.17.17",
     "@types/jasmine": "~5.1.0",
     "@types/node": "^18.18.0",
+    "dotenv-cli": "^8.0.0",
     "jasmine-core": "~5.6.0",
     "karma": "~6.4.0",
     "karma-chrome-launcher": "~3.2.0",
