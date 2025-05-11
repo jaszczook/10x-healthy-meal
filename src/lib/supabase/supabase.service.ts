@@ -1,14 +1,22 @@
 import { createClient, SupabaseClient } from '@supabase/supabase-js';
 import { environment } from '../../environments/environment';
+import * as dotenv from 'dotenv';
+
+// Load environment variables from .env file
+dotenv.config();
 
 export class SupabaseService {
   private supabase: SupabaseClient;
 
   constructor() {
-    this.supabase = createClient(
-      environment.supabaseUrl || process.env['SUPABASE_URL'] || '',
-      environment.supabaseKey || process.env['SUPABASE_ANON_KEY'] || ''
-    );
+    const supabaseUrl = environment.supabaseUrl || process.env['SUPABASE_URL'];
+    const supabaseKey = environment.supabaseKey || process.env['SUPABASE_ANON_KEY'];
+
+    if (!supabaseUrl || !supabaseKey) {
+      throw new Error('Supabase URL and key must be provided in environment variables or environment configuration');
+    }
+
+    this.supabase = createClient(supabaseUrl, supabaseKey);
   }
 
   get client(): SupabaseClient {
