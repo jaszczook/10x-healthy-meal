@@ -1,17 +1,13 @@
-import { Injectable } from '@angular/core';
 import { createClient, SupabaseClient } from '@supabase/supabase-js';
 import { environment } from '../../environments/environment';
 
-@Injectable({
-  providedIn: 'root'
-})
 export class SupabaseService {
   private supabase: SupabaseClient;
 
   constructor() {
     this.supabase = createClient(
-      environment.supabaseUrl,
-      environment.supabaseKey
+      environment.supabaseUrl || process.env['SUPABASE_URL'] || '',
+      environment.supabaseKey || process.env['SUPABASE_ANON_KEY'] || ''
     );
   }
 
@@ -20,10 +16,6 @@ export class SupabaseService {
   }
 
   async getCurrentUserId(): Promise<string> {
-    if (!environment.production) {
-      return environment.testUserId;
-    }
-
     const { data: { session }, error } = await this.supabase.auth.getSession();
     if (error || !session) {
       throw new Error('Not authenticated');

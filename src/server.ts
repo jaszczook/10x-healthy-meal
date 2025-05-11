@@ -8,6 +8,7 @@ import express from 'express';
 import { dirname, resolve } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import routes from './routes';
+import recipesRoutes from './api/recipes/recipes.routes';
 
 const serverDistFolder = dirname(fileURLToPath(import.meta.url));
 const browserDistFolder = resolve(serverDistFolder, '../browser');
@@ -27,6 +28,7 @@ const angularApp = new AngularNodeAppEngine();
  * ```
  */
 app.use('/api', routes);
+app.use('/api/recipes', recipesRoutes);
 
 /**
  * Serve static files from /browser
