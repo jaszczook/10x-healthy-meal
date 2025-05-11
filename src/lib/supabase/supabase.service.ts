@@ -1,9 +1,5 @@
 import { createClient, SupabaseClient } from '@supabase/supabase-js';
 import { environment } from '../../environments/environment';
-import * as dotenv from 'dotenv';
-
-// Load environment variables from .env file
-dotenv.config();
 
 export class SupabaseService {
   private supabase: SupabaseClient;
