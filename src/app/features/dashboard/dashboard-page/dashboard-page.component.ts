@@ -10,7 +10,8 @@ import { AppPaginatorComponent } from '../components/app-paginator/app-paginator
 import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
-import { Recipe, RecipeListResponse, SortOption } from '../types';
+import { RecipeListItemDto, RecipesListResponseDto } from '../../../../types/dto';
+import { SortOption } from '../types';
 
 @Component({
   selector: 'app-dashboard-page',
@@ -24,63 +25,12 @@ import { Recipe, RecipeListResponse, SortOption } from '../types';
     RecipeListComponent,
     AppPaginatorComponent,
   ],
-  template: `
-    <div class="container mx-auto px-4 py-8">
-      <!-- Filters -->
-      <app-recipe-filters
-        [sortOptions]="sortOptions"
-        [initialSortBy]="sortBy()"
-        [initialSortDirection]="sortDirection()"
-        [initialSearchTerm]="searchTerm()"
-        (filtersChanged)="onFiltersChange($event)"
-      ></app-recipe-filters>
-
-      <!-- Loading state -->
-      @if (isLoading()) {
-        <div class="flex justify-center items-center h-64">
-          <mat-spinner></mat-spinner>
-        </div>
-      }
-
-      <!-- Error state -->
-      @if (error()) {
-        <div class="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded relative mb-4" role="alert">
-          <strong class="font-bold">Error!</strong>
-          <span class="block sm:inline"> {{ error() }}</span>
-        </div>
-      }
-
-      <!-- Recipe list -->
-      @if (!isLoading() && !error()) {
-        <app-recipe-list
-          [recipes]="recipes()"
-          (recipeClick)="onRecipeClick($event)"
-        ></app-recipe-list>
-
-        <!-- Pagination -->
-        <app-paginator
-          [length]="totalItems()"
-          [pageSize]="pageSize()"
-          [pageIndex]="currentPage()"
-          (pageChange)="onPageChange($event)"
-        ></app-paginator>
-      }
-
-      <!-- Add recipe FAB -->
-      <button
-        mat-fab
-        color="primary"
-        class="fixed bottom-8 right-8"
-        (click)="onAddRecipe()"
-      >
-        <mat-icon>add</mat-icon>
-      </button>
-    </div>
-  `
+  templateUrl: './dashboard-page.component.html',
+  styleUrls: ['./dashboard-page.component.scss']
 })
 export class DashboardPageComponent {
   // State
-  recipes = signal<Recipe[]>([]);
+  recipes = signal<RecipeListItemDto[]>([]);
   totalItems = signal(0);
   currentPage = signal(0);
   pageSize = signal(10);
@@ -114,14 +64,14 @@ export class DashboardPageComponent {
     this.error.set(null);
 
     this.recipeService.getRecipes({
-      page: this.currentPage(),
+      page: this.currentPage() + 1,
       pageSize: this.pageSize(),
       sortBy: this.sortBy(),
       sortDirection: this.sortDirection(),
       searchTerm: this.searchTerm(),
     }).subscribe({
-      next: (response: RecipeListResponse) => {
-        this.recipes.set(response.items);
+      next: (response: RecipesListResponseDto) => {
+        this.recipes.set(response.data);
         this.totalItems.set(response.total);
       },
       error: (error: unknown) => {

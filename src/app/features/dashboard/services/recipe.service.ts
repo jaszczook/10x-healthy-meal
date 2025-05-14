@@ -1,7 +1,7 @@
 import { Injectable } from '@angular/core';
 import { HttpClient, HttpParams } from '@angular/common/http';
 import { Observable } from 'rxjs';
-import { Recipe, RecipeListResponse } from '../types';
+import { RecipeListItemDto, RecipesListResponseDto } from '../../../../types/dto';
 
 export interface GetRecipesParams {
   page: number;
@@ -19,7 +19,7 @@ export class RecipeService {
 
   constructor(private readonly http: HttpClient) {}
 
-  getRecipes(params: GetRecipesParams): Observable<RecipeListResponse> {
+  getRecipes(params: GetRecipesParams): Observable<RecipesListResponseDto> {
     let httpParams = new HttpParams()
       .set('page', params.page.toString())
       .set('page_size', params.pageSize.toString())
@@ -30,19 +30,19 @@ export class RecipeService {
       httpParams = httpParams.set('search', params.searchTerm);
     }
 
-    return this.http.get<RecipeListResponse>(this.apiUrl, { params: httpParams });
+    return this.http.get<RecipesListResponseDto>(this.apiUrl, { params: httpParams });
   }
 
-  getRecipe(id: string): Observable<Recipe> {
-    return this.http.get<Recipe>(`${this.apiUrl}/${id}`);
+  getRecipe(id: string): Observable<RecipeListItemDto> {
+    return this.http.get<RecipeListItemDto>(`${this.apiUrl}/${id}`);
   }
 
-  createRecipe(recipe: Omit<Recipe, 'id' | 'createdAt' | 'updatedAt'>): Observable<Recipe> {
-    return this.http.post<Recipe>(this.apiUrl, recipe);
+  createRecipe(recipe: Omit<RecipeListItemDto, 'id' | 'createdAt' | 'updatedAt'>): Observable<RecipeListItemDto> {
+    return this.http.post<RecipeListItemDto>(this.apiUrl, recipe);
   }
 
-  updateRecipe(id: string, recipe: Partial<Recipe>): Observable<Recipe> {
-    return this.http.patch<Recipe>(`${this.apiUrl}/${id}`, recipe);
+  updateRecipe(id: string, recipe: Partial<RecipeListItemDto>): Observable<RecipeListItemDto> {
+    return this.http.patch<RecipeListItemDto>(`${this.apiUrl}/${id}`, recipe);
   }
 
   deleteRecipe(id: string): Observable<void> {

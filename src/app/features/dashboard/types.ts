@@ -20,16 +20,9 @@ export interface PaginationState {
 export interface Recipe {
   id: string;
   title: string;
-  description: string;
-  ingredients: string[];
-  instructions: string[];
-  prepTime: number;
-  cookTime: number;
-  servings: number;
-  difficulty: 'easy' | 'medium' | 'hard';
-  imageUrl?: string;
-  createdAt: string;
-  updatedAt: string;
+  total_calories: number | null;
+  created_at: string;
+  updated_at: string;
 }
 
 export interface RecipeListResponse {

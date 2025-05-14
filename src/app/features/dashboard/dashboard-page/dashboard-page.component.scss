@@ -1,0 +1,37 @@
+.dashboard-container {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 2rem 1rem;
+}
+
+.loading-container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 16rem;
+}
+
+.error-container {
+  background-color: #fee2e2;
+  border: 1px solid #f87171;
+  color: #b91c1c;
+  padding: 0.75rem 1rem;
+  border-radius: 0.25rem;
+  margin-bottom: 1rem;
+}
+
+.error-title {
+  font-weight: 700;
+  display: block;
+}
+
+.error-message {
+  display: block;
+  margin-top: 0.25rem;
+}
+
+.add-recipe-button {
+  position: fixed;
+  bottom: 2rem;
+  right: 2rem;
+} 

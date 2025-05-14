@@ -39,7 +39,6 @@
     "@types/express": "^4.17.17",
     "@types/jasmine": "~5.1.0",
     "@types/node": "^18.18.0",
-    "autoprefixer": "^10.4.21",
     "dotenv-cli": "^8.0.0",
     "jasmine-core": "~5.6.0",
     "karma": "~6.4.0",
