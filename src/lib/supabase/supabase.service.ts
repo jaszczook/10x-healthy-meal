@@ -20,6 +20,7 @@ export class SupabaseService {
   }
 
   async getCurrentUserId(): Promise<string> {
+    // TODO: Remove this once we have a real user.
     return '00000000-0000-0000-0000-000000000001';
     // const { data: { session }, error } = await this.supabase.auth.getSession();
     // if (error || !session) {
