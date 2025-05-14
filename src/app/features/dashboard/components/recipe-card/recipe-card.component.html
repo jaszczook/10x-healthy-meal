@@ -1,0 +1,15 @@
+<mat-card class="h-full cursor-pointer hover:shadow-lg transition-shadow duration-200" (click)="onClick()">
+  <mat-card-header>
+    <mat-card-title class="text-lg font-medium line-clamp-2">{{ recipe.title }}</mat-card-title>
+    <mat-card-subtitle class="text-sm text-gray-500">
+      {{ recipe.created_at | date:'shortDate' }}
+    </mat-card-subtitle>
+  </mat-card-header>
+
+  <mat-card-content class="mt-4">
+    <div class="flex items-center text-gray-600">
+      <mat-icon class="mr-2 text-gray-400">local_fire_department</mat-icon>
+      <span>{{ recipe.total_calories ?? 'N/A' }} kcal</span>
+    </div>
+  </mat-card-content>
+</mat-card> 

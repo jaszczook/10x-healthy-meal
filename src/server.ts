@@ -5,6 +5,7 @@ import {
   writeResponseToNodeResponse,
 } from '@angular/ssr/node';
 import express from 'express';
+import cors from 'cors';
 import { dirname, resolve } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import health from './api/recipes/health.routes';
@@ -15,6 +16,13 @@ const browserDistFolder = resolve(serverDistFolder, '../browser');
 
 const app = express();
 const angularApp = new AngularNodeAppEngine();
+
+// Enable CORS for Angular development server
+app.use(cors({
+  origin: 'http://localhost:4200',
+  methods: ['GET', 'POST', 'PUT', 'DELETE', 'PATCH'],
+  allowedHeaders: ['Content-Type', 'Authorization']
+}));
 
 /**
  * Example Express Rest API endpoints can be defined here.
