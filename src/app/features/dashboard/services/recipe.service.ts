@@ -15,7 +15,7 @@ export interface GetRecipesParams {
   providedIn: 'root'
 })
 export class RecipeService {
-  private readonly apiUrl = 'http://localhost:3000/api/recipes';
+  private readonly apiUrl = 'api/recipes';
 
   constructor(private readonly http: HttpClient) {}
 
