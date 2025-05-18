@@ -1,18 +1,18 @@
 <form [formGroup]="loginForm" (ngSubmit)="onSubmit()">
-  <h2 class="text-2xl font-bold mb-4 text-center">Login</h2>
-  <mat-form-field appearance="fill" class="w-full mb-4">
+  <h2>Login</h2>
+  <mat-form-field appearance="fill">
     <mat-label>Email</mat-label>
     <input matInput placeholder="Email" formControlName="email" />
     <mat-error *ngIf="loginForm.get('email')?.hasError('required')">Email is required</mat-error>
     <mat-error *ngIf="loginForm.get('email')?.hasError('email')">Invalid email</mat-error>
   </mat-form-field>
-  <mat-form-field appearance="fill" class="w-full mb-4">
+  <mat-form-field appearance="fill">
     <mat-label>Password</mat-label>
     <input matInput placeholder="Password" type="password" formControlName="password" />
     <mat-error *ngIf="loginForm.get('password')?.hasError('required')">Password is required</mat-error>
     <mat-error *ngIf="loginForm.get('password')?.hasError('minlength')">Password must be at least 6 characters</mat-error>
   </mat-form-field>
-  <button mat-raised-button color="primary" class="w-full" type="submit" [disabled]="isSubmitting">
+  <button mat-raised-button color="primary" type="submit" [disabled]="isSubmitting">
     <ng-container *ngIf="!isSubmitting; else loading">
       Login
     </ng-container>
@@ -20,8 +20,8 @@
       <mat-progress-spinner diameter="24" mode="indeterminate"></mat-progress-spinner>
     </ng-template>
   </button>
-  <div class="flex justify-between mt-4">
-    <a routerLink="/auth/reset-password" class="text-sm text-blue-600 hover:underline">Forgot password?</a>
-    <a routerLink="/auth/register" class="text-sm text-blue-600 hover:underline">Register</a>
+  <div class="actions">
+    <a routerLink="/auth/reset-password">Forgot password?</a>
+    <a routerLink="/auth/register">Register</a>
   </div>
 </form> 
