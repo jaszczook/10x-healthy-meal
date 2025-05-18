@@ -27,7 +27,6 @@ HealthyMeal is a web-based tool that helps users store and personalize recipes u
 ### Frontend
 - Angular 19
 - TypeScript 5
-- Tailwind 4
 - Angular Material
 
 ### Backend

@@ -12,7 +12,6 @@ alwaysApply: true
 - Angular 19
 - Angular Material
 - TypeScript 5
-- Tailwind 4
 
 ## Project Structure
 

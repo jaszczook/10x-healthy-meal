@@ -184,7 +184,7 @@ Potencjalne scenariusze i podejście do obsługi:
 9. **Frontend (Angular 19):**
    - Wygeneruj serwis: `ng generate service lib/openrouter-client`
    - Użyj `HttpClient` do wywołania endpointu Express.
-   - Dodaj komponent czatu (`ChatComponent`) w Angular Material + Tailwind.
+   - Dodaj komponent czatu (`ChatComponent`) w Angular Material.
 10. **CI/CD:**
     - Dodaj sekrety (`OPENROUTER_API_KEY`) do GitHub Actions.
     - Zaktualizuj pipeline, aby budować i testować serwis.

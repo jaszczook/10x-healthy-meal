@@ -11,7 +11,7 @@ Ran tool
 
 ## 1. Przegląd struktury UI
 
-Aplikacja HealthyMeal będzie zbudowana jako aplikacja webowa SPA z wykorzystaniem Angular 19, Angular Material i Tailwind CSS. Struktura interfejsu użytkownika będzie oparta na responsywnych kartach i formularzyach, z centralnym układem nawigacyjnym dla zapewnienia spójnego doświadczenia użytkownika. Aplikacja będzie zorganizowana wokół kilku głównych widoków, które obsługują podstawowe funkcje: uwierzytelnianie, zarządzanie preferencjami, przeglądanie przepisów oraz tworzenie i edycję przepisów.
+Aplikacja HealthyMeal będzie zbudowana jako aplikacja webowa SPA z wykorzystaniem Angular 19 i Angular Material. Struktura interfejsu użytkownika będzie oparta na responsywnych kartach i formularzyach, z centralnym układem nawigacyjnym dla zapewnienia spójnego doświadczenia użytkownika. Aplikacja będzie zorganizowana wokół kilku głównych widoków, które obsługują podstawowe funkcje: uwierzytelnianie, zarządzanie preferencjami, przeglądanie przepisów oraz tworzenie i edycję przepisów.
 
 Architektura UI jest zaprojektowana tak, aby wspierać główne przypadki użycia z PRD, ze szczególnym uwzględnieniem procesu dodawania i personalizowania przepisów z wykorzystaniem AI. Interfejs będzie optymalizowany pod przeglądarkę Chrome w rozdzielczości FullHD, zgodnie z wymaganiami niefunkcjonalnymi.
 

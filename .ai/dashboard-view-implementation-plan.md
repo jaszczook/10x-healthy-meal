@@ -275,7 +275,7 @@ Stan widoku będzie zarządzany w `DashboardPageComponent` przy użyciu sygnał�
     - Wyświetlaj komunikaty o błędach (`<div *ngIf="error()">{{ error() }}</div>`).
     - Dodaj FAB.
 10. **Routing**: Skonfiguruj trasę `/dashboard` wskazującą na `DashboardPageComponent` i zabezpiecz ją `AuthGuard`.
-11. **Styling (SCSS)**: Ostyluj komponenty zgodnie z projektem, używając Angular Material i Tailwind CSS.
+11. **Styling (SCSS)**: Ostyluj komponenty zgodnie z projektem, używając Angular Material.
 12. **Testy Jednostkowe**: Napisz testy dla logiki komponentów (szczególnie `DashboardPageComponent`) i interakcji.
 13. **Testy E2E (opcjonalnie)**: Stwórz testy weryfikujące przepływ użytkownika na widoku dashboard.
 14. **Dostępność (ARIA)**: Upewnij się, że wszystkie interaktywne elementy są dostępne i mają odpowiednie atrybuty ARIA. 

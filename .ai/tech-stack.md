@@ -1,7 +1,6 @@
 Frontend:
 - Angular 19 pozwala na tworzenie szybkich, wydajnych stron i aplikacji z minimalną ilością JavaScript
 - TypeScript 5 dla statycznego typowania kodu i lepszego wsparcia IDE
-- Tailwind 4 pozwala na wygodne stylowanie aplikacji
 - Angular Material zapewnia bibliotekę dostępnych komponentów, na których oprzemy UI
 
 Backend:
