@@ -17,12 +17,53 @@ alwaysApply: true
 
 When introducing changes to the project, always follow the directory structure below:
 
-- `./src` - source code
-- `./src/db` - Supabase clients and types
-- `./src/types` - Shared types for backend and frontend (Entities, DTOs)
-- `./src/lib` - Services and helpers 
-- `./src/assets` - Static internal assets
-- `./public` - Public assets
+### src/api
+Contains backend API-related code, including:
+- API endpoint controllers and route definitions
+- Request/response handlers
+- API middleware
+- API documentation
+- Input validation
+Note: This directory focuses on the HTTP layer and request handling, while the actual business logic resides in `src/lib`
+
+### src/app
+The frontend application directory containing:
+- Root component and configuration
+- Routing setup
+- Feature modules and components
+- Page layouts and templates
+- Frontend services and state management
+- UI/UX implementation
+
+### src/lib
+Backend core business logic:
+- Service implementations
+- Business rules and domain logic
+- Data processing and transformation
+- Core backend functionality
+- Reusable backend utilities
+Note: This directory contains the actual implementation of business logic that the API endpoints in `src/api` expose
+
+### src/db
+Database-related code:
+- Supabase client configuration
+- Database models and schemas
+- Query builders and helpers
+- Database utilities
+
+### src/types
+Shared TypeScript types used across the application:
+- Interface definitions
+- Type declarations
+- DTOs (Data Transfer Objects)
+- Enums and constants
+
+### src/environments
+Environment-specific configuration:
+- Development settings
+- Production settings
+- Testing configurations
+- Environment variables
 
 When modifying the directory structure, always update this section.
 
