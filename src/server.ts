@@ -8,6 +8,7 @@ import express from 'express';
 import cors from 'cors';
 import { dirname, resolve } from 'node:path';
 import { fileURLToPath } from 'node:url';
+import authRoutes from './api/routes/auth.routes';
 import health from './api/recipes/health.routes';
 import recipesRoutes from './api/recipes/recipes.routes';
 
@@ -35,6 +36,7 @@ app.use(cors({
  * });
  * ```
  */
+app.use('/api/auth', authRoutes);
 app.use('/api/health', health);
 app.use('/api/recipes', recipesRoutes);
 
@@ -59,6 +61,15 @@ app.use('/**', (req, res, next) => {
       response ? writeResponseToNodeResponse(response, res) : next(),
     )
     .catch(next);
+});
+
+// Global error handler for API and SSR
+app.use((err: any, req: any, res: any, next: any) => {
+  console.error('Unhandled error:', err);
+  if (res.headersSent) {
+    return next(err);
+  }
+  res.status(500).json({ error: 'Internal Server Error' });
 });
 
 /**

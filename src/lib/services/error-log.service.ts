@@ -1,23 +1,27 @@
 import { SupabaseService } from '../supabase/supabase.service';
+import { SupabaseClient } from '@supabase/supabase-js';
 
 export class ErrorLogService {
-  constructor(private supabaseService: SupabaseService) {}
+  private supabaseService: SupabaseService;
+  private supabase: SupabaseClient;
 
-  async logError(userId: string | null, error: unknown): Promise<void> {
+  constructor(supabaseService: SupabaseService) {
+    this.supabaseService = supabaseService;
+    this.supabase = supabaseService.client;
+  }
+
+  async logError(type: string, error: any, userId?: string): Promise<void> {
     try {
-      const errorMessage = error instanceof Error ? error.message : String(error);
-      
-      await this.supabaseService.client
+      await this.supabase
         .from('error_logs')
         .insert({
-          user_id: userId,
-          message: errorMessage,
-          created_at: new Date().toISOString()
+          user_id: userId || null,
+          message: error?.message ?? JSON.stringify(error),
+          type,
         });
-    } catch (logError) {
-      // If we can't log the error, at least log it to console
-      console.error('Failed to log error:', logError);
-      console.error('Original error:', error);
+    } catch {
+      // Logging failure should not block main execution
+      console.error('Failed to log error:', error);
     }
   }
 } 
