@@ -31,6 +31,7 @@ W zakresie MVP nie będzie:
 - wersjonowania schematu JSON
 - powiadomień e-mail
 - onboardingów czy testów użyteczności przed premierą
+- dostęp niezalogowanych użytkowników ograniczony wyłącznie do ekranów logowania i rejestracji 
 
 ## 5. Historyjki użytkowników
 - ID: US-001  

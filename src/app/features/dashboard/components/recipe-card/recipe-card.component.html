@@ -1,0 +1,14 @@
+<mat-card class="recipe-card" (click)="onClick()">
+  <mat-card-header>
+    <mat-card-title class="recipe-title">{{ recipe.title }}</mat-card-title>
+    <mat-card-subtitle class="recipe-subtitle">
+      {{ recipe.created_at | date:'shortDate' }}
+    </mat-card-subtitle>
+  </mat-card-header>
+  <mat-card-content>
+    <div class="recipe-calories">
+      <mat-icon class="calories-icon">local_fire_department</mat-icon>
+      <span>{{ recipe.total_calories ?? 'N/A' }} kcal</span>
+    </div>
+  </mat-card-content>
+</mat-card> 

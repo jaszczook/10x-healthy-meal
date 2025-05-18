@@ -1,0 +1,7 @@
+<div class="recipe-grid">
+  <app-recipe-card
+    *ngFor="let recipe of recipes"
+    [recipe]="recipe"
+    (click)="onRecipeClick(recipe.id)">
+  </app-recipe-card>
+</div> 

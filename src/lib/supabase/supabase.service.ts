@@ -1,18 +1,18 @@
-import { Injectable } from '@angular/core';
 import { createClient, SupabaseClient } from '@supabase/supabase-js';
 import { environment } from '../../environments/environment';
 
-@Injectable({
-  providedIn: 'root'
-})
 export class SupabaseService {
   private supabase: SupabaseClient;
 
   constructor() {
-    this.supabase = createClient(
-      environment.supabaseUrl,
-      environment.supabaseKey
-    );
+    const supabaseUrl = environment.supabaseUrl;
+    const supabaseKey = environment.supabaseKey;
+
+    if (!supabaseUrl || !supabaseKey) {
+      throw new Error('Supabase URL and key must be provided in environment variables or environment configuration');
+    }
+
+    this.supabase = createClient(supabaseUrl, supabaseKey);
   }
 
   get client(): SupabaseClient {
@@ -20,14 +20,12 @@ export class SupabaseService {
   }
 
   async getCurrentUserId(): Promise<string> {
-    if (!environment.production) {
-      return environment.testUserId;
-    }
-
-    const { data: { session }, error } = await this.supabase.auth.getSession();
-    if (error || !session) {
-      throw new Error('Not authenticated');
-    }
-    return session.user.id;
+    // TODO: Remove this once we have a real user.
+    return '00000000-0000-0000-0000-000000000001';
+    // const { data: { session }, error } = await this.supabase.auth.getSession();
+    // if (error || !session) {
+    //   throw new Error('Not authenticated');
+    // }
+    // return session.user.id;
   }
 } 

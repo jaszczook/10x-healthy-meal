@@ -1,7 +1,14 @@
 import { Routes } from '@angular/router';
-import { RECIPES_ROUTES } from '../api/recipes/recipes.routes';
 
-export const APP_ROUTES: Routes = [
-  ...RECIPES_ROUTES,
-  // ... other routes
+export const routes: Routes = [
+  {
+    path: 'dashboard',
+    loadComponent: () => import('./features/dashboard/dashboard-page/dashboard-page.component').then(m => m.DashboardPageComponent),
+    // TODO: Add AuthGuard
+  },
+  {
+    path: '',
+    redirectTo: 'dashboard',
+    pathMatch: 'full'
+  }
 ];

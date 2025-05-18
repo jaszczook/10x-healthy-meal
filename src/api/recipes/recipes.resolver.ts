@@ -1,16 +1,18 @@
-import { Injectable } from '@angular/core';
-import { Resolve, ActivatedRouteSnapshot } from '@angular/router';
+import { Request } from 'express';
 import { RecipesApiController } from './recipes.controller';
 import { RecipesListResponseDto } from '../../types/dto';
 
-@Injectable({
-  providedIn: 'root'
-})
-export class RecipesResolver implements Resolve<RecipesListResponseDto> {
+export class RecipesResolver {
   constructor(private controller: RecipesApiController) {}
 
-  resolve(route: ActivatedRouteSnapshot) {
-    const { page, per_page, sort_by, sort_direction, search } = route.queryParams;
-    return this.controller.getRecipes(page, per_page, sort_by, sort_direction, search);
+  async resolve(req: Request): Promise<RecipesListResponseDto> {
+    const { page, per_page, sort_by, sort_direction, search } = req.query;
+    return this.controller.getRecipes(
+      page as string,
+      per_page as string,
+      sort_by as string,
+      sort_direction as string,
+      search as string
+    );
   }
 } 

@@ -1,0 +1,40 @@
+:host {
+  display: block;
+  height: 100%;
+}
+
+.recipe-card {
+  height: 100%;
+  cursor: pointer;
+  transition: box-shadow 0.2s ease-in-out;
+
+  &:hover {
+    box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+  }
+}
+
+.recipe-title {
+  font-size: 1.125rem;
+  font-weight: 500;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+
+.recipe-subtitle {
+  font-size: 0.875rem;
+  color: rgba(0, 0, 0, 0.6);
+}
+
+.recipe-calories {
+  display: flex;
+  align-items: center;
+  color: rgba(0, 0, 0, 0.6);
+  margin-top: 1rem;
+
+  .calories-icon {
+    margin-right: 0.5rem;
+    color: rgba(0, 0, 0, 0.4);
+  }
+} 

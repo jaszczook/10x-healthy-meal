@@ -1,20 +1,12 @@
-import { Injectable } from '@angular/core';
-import { createClient } from '@supabase/supabase-js';
 import { RecipeListItemDto, RecipesListResponseDto } from '../../types/dto';
 import { RecipeEntity } from '../../types/entities';
 import { ErrorLogService } from './error-log.service';
+import { SupabaseService } from '../supabase/supabase.service';
 
-@Injectable({
-  providedIn: 'root'
-})
 export class RecipesService {
-  private supabase = createClient(
-    process.env['SUPABASE_URL'] || '',
-    process.env['SUPABASE_ANON_KEY'] || ''
-  );
-
   constructor(
-    private errorLogService: ErrorLogService
+    private errorLogService: ErrorLogService,
+    private supabaseService: SupabaseService
   ) {}
 
   async getRecipesList(
@@ -30,7 +22,7 @@ export class RecipesService {
       const offset = (page - 1) * perPage;
 
       // Build query
-      let query = this.supabase
+      let query = this.supabaseService.client
         .from('recipes')
         .select('*', { count: 'exact' })
         .eq('user_id', userId);

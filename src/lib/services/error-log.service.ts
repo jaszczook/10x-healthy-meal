@@ -1,21 +1,13 @@
-import { Injectable } from '@angular/core';
-import { createClient } from '@supabase/supabase-js';
-import { ErrorLogDto } from '../../types/dto';
+import { SupabaseService } from '../supabase/supabase.service';
 
-@Injectable({
-  providedIn: 'root'
-})
 export class ErrorLogService {
-  private supabase = createClient(
-    process.env['SUPABASE_URL'] || '',
-    process.env['SUPABASE_ANON_KEY'] || ''
-  );
+  constructor(private supabaseService: SupabaseService) {}
 
   async logError(userId: string | null, error: unknown): Promise<void> {
     try {
       const errorMessage = error instanceof Error ? error.message : String(error);
       
-      await this.supabase
+      await this.supabaseService.client
         .from('error_logs')
         .insert({
           user_id: userId,

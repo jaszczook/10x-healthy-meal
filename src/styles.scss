@@ -1,1 +1,18 @@
+@use '@angular/material' as mat;
+
+// @tailwind base;
+// @tailwind components;
+// @tailwind utilities;
+
 /* You can add global styles to this file, and also import other style files */
+
+html {
+  color-scheme: light dark;
+  @include mat.theme((
+    color: mat.$azure-palette,
+    typography: Roboto,
+    density: 0
+  ));
+}
+html, body { height: 100%; }
+body { margin: 0; font-family: Roboto, "Helvetica Neue", sans-serif; }

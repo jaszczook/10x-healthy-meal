@@ -1,0 +1,51 @@
+<div class="dashboard-container">
+  <!-- Filters -->
+  <app-recipe-filters
+    [sortOptions]="sortOptions"
+    [initialSortBy]="sortBy()"
+    [initialSortDirection]="sortDirection()"
+    [initialSearchTerm]="searchTerm()"
+    (filtersChanged)="onFiltersChange($event)"
+  ></app-recipe-filters>
+
+  <!-- Loading state -->
+  @if (isLoading()) {
+    <div class="loading-container">
+      <mat-spinner></mat-spinner>
+    </div>
+  }
+
+  <!-- Error state -->
+  @if (error()) {
+    <div class="error-container" role="alert">
+      <strong class="error-title">Error!</strong>
+      <span class="error-message">{{ error() }}</span>
+    </div>
+  }
+
+  <!-- Recipe list -->
+  @if (!isLoading() && !error()) {
+    <app-recipe-list
+      [recipes]="recipes()"
+      (recipeClick)="onRecipeClick($event)"
+    ></app-recipe-list>
+
+    <!-- Pagination -->
+    <app-paginator
+      [length]="totalItems()"
+      [pageSize]="pageSize()"
+      [pageIndex]="currentPage()"
+      (pageChange)="onPageChange($event)"
+    ></app-paginator>
+  }
+
+  <!-- Add recipe FAB -->
+  <button
+    mat-fab
+    color="primary"
+    class="add-recipe-button"
+    (click)="onAddRecipe()"
+  >
+    <mat-icon>add</mat-icon>
+  </button>
+</div> 

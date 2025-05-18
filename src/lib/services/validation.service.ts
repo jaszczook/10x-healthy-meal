@@ -1,8 +1,3 @@
-import { Injectable } from '@angular/core';
-
-@Injectable({
-  providedIn: 'root'
-})
 export class ValidationService {
   validatePaginationParams(page: number, perPage: number): void {
     if (!Number.isInteger(page) || page < 1) {

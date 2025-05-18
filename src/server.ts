@@ -5,15 +5,24 @@ import {
   writeResponseToNodeResponse,
 } from '@angular/ssr/node';
 import express from 'express';
+import cors from 'cors';
 import { dirname, resolve } from 'node:path';
 import { fileURLToPath } from 'node:url';
-import routes from './routes';
+import health from './api/recipes/health.routes';
+import recipesRoutes from './api/recipes/recipes.routes';
 
 const serverDistFolder = dirname(fileURLToPath(import.meta.url));
 const browserDistFolder = resolve(serverDistFolder, '../browser');
 
 const app = express();
 const angularApp = new AngularNodeAppEngine();
+
+// Enable CORS for Angular development server
+app.use(cors({
+  origin: 'http://localhost:4200',
+  methods: ['GET', 'POST', 'PUT', 'DELETE', 'PATCH'],
+  allowedHeaders: ['Content-Type', 'Authorization']
+}));
 
 /**
  * Example Express Rest API endpoints can be defined here.
@@ -26,7 +35,8 @@ const angularApp = new AngularNodeAppEngine();
  * });
  * ```
  */
-app.use('/api', routes);
+app.use('/api/health', health);
+app.use('/api/recipes', recipesRoutes);
 
 /**
  * Serve static files from /browser

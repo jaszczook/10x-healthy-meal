@@ -1,17 +1,11 @@
-import { Injectable } from '@angular/core';
-import { Router } from '@angular/router';
 import { RecipesService } from '../../lib/services/recipes.service';
 import { ValidationService } from '../../lib/services/validation.service';
 import { ErrorLogService } from '../../lib/services/error-log.service';
 import { RecipesListResponseDto } from '../../types/dto';
 import { SupabaseService } from '../../lib/supabase/supabase.service';
 
-@Injectable({
-  providedIn: 'root'
-})
 export class RecipesApiController {
   constructor(
-    private router: Router,
     private recipesService: RecipesService,
     private validationService: ValidationService,
     private errorLogService: ErrorLogService,
@@ -56,7 +50,6 @@ export class RecipesApiController {
 
       // Rethrow with appropriate status code
       if (error instanceof Error && error.message === 'Not authenticated') {
-        this.router.navigate(['/auth/login']);
         throw new Error('401 Unauthorized');
       }
       throw new Error('500 Internal Server Error');
