@@ -46,7 +46,7 @@ export class RecipesApiController {
       );
     } catch (error) {
       // Log error
-      await this.errorLogService.logError(null, error);
+      await this.errorLogService.logError('getRecipes', error);
 
       // Rethrow with appropriate status code
       if (error instanceof Error && error.message === 'Not authenticated') {
