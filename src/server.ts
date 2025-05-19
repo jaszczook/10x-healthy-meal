@@ -8,8 +8,8 @@ import express from 'express';
 import cors from 'cors';
 import { dirname, resolve } from 'node:path';
 import { fileURLToPath } from 'node:url';
-import authRoutes from './api/routes/auth.routes';
-import health from './api/recipes/health.routes';
+import authRoutes from './api/auth/auth.routes';
+import health from './api/health/health.routes';
 import recipesRoutes from './api/recipes/recipes.routes';
 
 const serverDistFolder = dirname(fileURLToPath(import.meta.url));

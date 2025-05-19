@@ -1,9 +1,9 @@
 import { Router } from 'express';
-import { AuthController } from '../controllers/auth.controller';
+import { AuthController } from './auth.controller';
 import { SupabaseService } from '../../lib/supabase/supabase.service';
 import { AuthService } from '../../lib/services/auth.service';
 import { ErrorLogService } from '../../lib/services/error-log.service';
-import { validateLoginDto, validateRegisterDto } from '../validators/auth.validator';
+import { validateLoginDto, validateRegisterDto } from './auth.validator';
 
 const router = Router();
 

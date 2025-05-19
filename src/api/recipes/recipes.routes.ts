@@ -5,12 +5,12 @@ import { RecipesService } from '../../lib/services/recipes.service';
 import { ValidationService } from '../../lib/services/validation.service';
 import { ErrorLogService } from '../../lib/services/error-log.service';
 import { SupabaseService } from '../../lib/supabase/supabase.service';
-import { authMiddleware } from '../middleware/auth.middleware';
+import { authMiddleware } from '../auth/auth.middleware';
 
 const router = Router();
 
 // Apply authentication middleware to all recipe endpoints
-// router.use(authMiddleware);
+router.use(authMiddleware);
 
 // Initialize services
 const supabaseService = new SupabaseService();
