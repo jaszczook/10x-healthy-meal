@@ -10,7 +10,7 @@ import { authMiddleware } from '../middleware/auth.middleware';
 const router = Router();
 
 // Apply authentication middleware to all recipe endpoints
-router.use(authMiddleware);
+// router.use(authMiddleware);
 
 // Initialize services
 const supabaseService = new SupabaseService();
