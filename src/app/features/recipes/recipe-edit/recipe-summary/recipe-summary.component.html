@@ -1,0 +1,100 @@
+<mat-card class="summary-card">
+  <mat-card-header>
+    <mat-card-title>Recipe Summary</mat-card-title>
+  </mat-card-header>
+  
+  <mat-card-content>
+    <!-- Calorie Information -->
+    <mat-list class="summary-list">
+      <mat-list-item class="calorie-item">
+        <mat-icon matListItemIcon [class]="'calorie-icon ' + caloriesStatus">
+          local_fire_department
+        </mat-icon>
+        <span matListItemTitle>Calories</span>
+        <div matListItemLine class="calorie-edit">
+          <span class="calorie-text" [class]="caloriesStatus">
+            {{ summary.totalCalories }} kcal
+            <span *ngIf="userPreferences?.target_calories" class="target-info">
+              (target: {{ userPreferences?.target_calories }} kcal)
+            </span>
+          </span>
+          <button mat-icon-button (click)="startEditing()" *ngIf="!isEditing">
+            <mat-icon>edit</mat-icon>
+          </button>
+          <div class="calorie-input" *ngIf="isEditing">
+            <mat-form-field>
+              <input matInput type="number" [(ngModel)]="editedCalories" min="0">
+              <span matSuffix>kcal</span>
+            </mat-form-field>
+            <div class="calorie-actions">
+              <button mat-icon-button color="primary" (click)="saveCalories()">
+                <mat-icon>check</mat-icon>
+              </button>
+              <button mat-icon-button (click)="cancelEditing()">
+                <mat-icon>close</mat-icon>
+              </button>
+            </div>
+          </div>
+        </div>
+      </mat-list-item>
+
+      <!-- Ingredients Count -->
+      <mat-list-item>
+        <mat-icon matListItemIcon>restaurant</mat-icon>
+        <span matListItemTitle>Ingredients</span>
+        <span matListItemLine>{{ summary.ingredients.length }} ingredients</span>
+      </mat-list-item>
+    </mat-list>
+
+    <!-- Allergens Section -->
+    <div *ngIf="allergens.length > 0" class="allergens-section">
+      <h4>Detected Allergens</h4>
+      <div class="allergen-chips">
+        <span 
+          *ngFor="let allergen of allergens" 
+          class="allergen-chip"
+          [class.user-allergen]="isUserAllergen(allergen)"
+          [class.user-intolerance]="isUserIntolerance(allergen)">
+          <mat-icon *ngIf="isUserAllergen(allergen) || isUserIntolerance(allergen)">warning</mat-icon>
+          {{ allergen }}
+        </span>
+      </div>
+    </div>
+
+    <!-- User Warnings -->
+    <div *ngIf="userPreferences" class="warnings-section">
+      <div *ngIf="userAllergens.length > 0 || userIntolerances.length > 0" class="user-warnings">
+        <h4>Warnings for Your Preferences</h4>
+        
+        <div *ngFor="let ingredient of summary.ingredients" class="ingredient-warning">
+          <div *ngIf="isUserAllergen(ingredient.name)" class="warning-item allergen-warning">
+            <mat-icon>error</mat-icon>
+            <span>{{ ingredient.name }} may contain allergens from your list</span>
+          </div>
+          <div *ngIf="isUserIntolerance(ingredient.name)" class="warning-item intolerance-warning">
+            <mat-icon>info</mat-icon>
+            <span>{{ ingredient.name }} may contain ingredients you don't tolerate</span>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Calorie Status Info -->
+    <div *ngIf="userPreferences?.target_calories" class="calorie-status-info">
+      <div [ngSwitch]="caloriesStatus" class="status-message">
+        <div *ngSwitchCase="'on-target'" class="success-message">
+          <mat-icon>check_circle</mat-icon>
+          <span>Calories match your target (±10%)</span>
+        </div>
+        <div *ngSwitchCase="'under'" class="info-message">
+          <mat-icon>trending_down</mat-icon>
+          <span>Recipe has fewer calories than your target</span>
+        </div>
+        <div *ngSwitchCase="'over'" class="warning-message">
+          <mat-icon>trending_up</mat-icon>
+          <span>Recipe has more calories than your target</span>
+        </div>
+      </div>
+    </div>
+  </mat-card-content>
+</mat-card> 

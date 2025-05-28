@@ -1,0 +1,13 @@
+:host {
+  display: block;
+}
+
+mat-list-item {
+  margin-bottom: 1rem;
+  align-items: flex-start;
+
+  span {
+    white-space: normal;
+    line-height: 1.5;
+  }
+} 

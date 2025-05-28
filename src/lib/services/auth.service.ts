@@ -28,10 +28,21 @@ export class AuthService {
   }
 
   async getSession(req: Request) {
-    const { data: { session }, error } = await this.supabase.auth.getSession();
+    const accessToken = req.cookies['sb-access-token'];
+    if (!accessToken) {
+      console.log('No access token found in cookies');
+      throw new Error('No access token found in cookies');
+    }
+
+    const { data: { user }, error } = await this.supabase.auth.getUser(accessToken);
+    
     if (error) throw error;
-    if (!session) throw new Error('No active session');
-    return session;
+    if (!user) throw new Error('No active session');
+    
+    return {
+      user,
+      access_token: accessToken
+    };
   }
 
   async signOut() {

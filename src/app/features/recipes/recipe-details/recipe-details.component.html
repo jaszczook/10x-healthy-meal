@@ -1,0 +1,34 @@
+<div class="recipe-details-container">
+  @if (loading()) {
+    <mat-spinner></mat-spinner>
+  } @else if (error()) {
+    <mat-card class="error-card">
+      <mat-card-content>
+        <p>{{ error() }}</p>
+        <button mat-button color="primary" (click)="loadRecipe()">Try Again</button>
+      </mat-card-content>
+    </mat-card>
+  } @else if (recipe()) {
+    <mat-card class="recipe-details">
+      <mat-card-header>
+        <mat-card-title>{{ recipe()?.title }}</mat-card-title>
+      </mat-card-header>
+      
+      <mat-card-content>
+        <app-recipe-summary [recipe]="recipe()!"></app-recipe-summary>
+        <app-recipe-tabs [recipe]="recipe()!"></app-recipe-tabs>
+      </mat-card-content>
+
+      <mat-card-actions align="end">
+        <button mat-button color="primary" (click)="navigateToEdit()">
+          <mat-icon>edit</mat-icon>
+          Edit Recipe
+        </button>
+        <button mat-button color="warn" (click)="openDeleteDialog()">
+          <mat-icon>delete</mat-icon>
+          Delete Recipe
+        </button>
+      </mat-card-actions>
+    </mat-card>
+  }
+</div> 

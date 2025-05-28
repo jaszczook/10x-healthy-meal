@@ -1,0 +1,10 @@
+:host {
+  display: block;
+  margin-top: 1rem;
+}
+
+::ng-deep {
+  .mat-mdc-tab-body-wrapper {
+    padding: 1rem 0;
+  }
+} 

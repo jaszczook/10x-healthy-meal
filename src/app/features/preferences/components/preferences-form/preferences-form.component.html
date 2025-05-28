@@ -1,0 +1,44 @@
+<form [formGroup]="form" (ngSubmit)="onSubmit()" class="flex flex-col gap-4">
+  <app-multi-select
+    label="Allergies"
+    [options]="allergyOptions"
+    [value]="form.get('allergies')?.value || []"
+    (onChange)="onSelectionChange('allergies', $event)"
+  ></app-multi-select>
+
+  <app-multi-select
+    label="Intolerances"
+    [options]="intoleranceOptions"
+    [value]="form.get('intolerances')?.value || []"
+    (onChange)="onSelectionChange('intolerances', $event)"
+  ></app-multi-select>
+
+  <mat-form-field>
+    <mat-label>Target Calories</mat-label>
+    <input
+      matInput
+      type="number"
+      formControlName="target_calories"
+      placeholder="Enter target calories"
+    >
+    @if (form.get('target_calories')?.errors?.['required'] && form.get('target_calories')?.touched) {
+      <mat-error>Target calories is required</mat-error>
+    }
+    @if (form.get('target_calories')?.errors?.['min'] && form.get('target_calories')?.touched) {
+      <mat-error>Target calories must be greater than 0</mat-error>
+    }
+  </mat-form-field>
+
+  @if (isLoading) {
+    <mat-progress-bar mode="indeterminate"></mat-progress-bar>
+  }
+
+  <button
+    mat-raised-button
+    color="primary"
+    type="submit"
+    [disabled]="!form.valid || isLoading"
+  >
+    Save Preferences
+  </button>
+</form> 

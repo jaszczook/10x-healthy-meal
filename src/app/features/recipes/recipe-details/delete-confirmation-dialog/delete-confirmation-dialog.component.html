@@ -1,0 +1,11 @@
+<h2 mat-dialog-title>Delete Recipe</h2>
+
+<mat-dialog-content>
+  <p>Are you sure you want to delete "{{ data.recipeTitle }}"?</p>
+  <p class="warning">This action cannot be undone.</p>
+</mat-dialog-content>
+
+<mat-dialog-actions align="end">
+  <button mat-button (click)="onCancel()">Cancel</button>
+  <button mat-button color="warn" (click)="onConfirm()">Delete</button>
+</mat-dialog-actions> 

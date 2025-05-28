@@ -1,0 +1,55 @@
+.steps-container {
+  margin-bottom: 24px;
+}
+
+.section-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 16px;
+}
+
+.section-header h3 {
+  margin: 0;
+  color: rgba(0, 0, 0, 0.87);
+}
+
+.steps-table {
+  width: 100%;
+  margin-bottom: 16px;
+}
+
+.full-width {
+  width: 100%;
+}
+
+.step-number {
+  font-size: 1.2rem;
+  font-weight: 500;
+  background: #1976d2;
+  color: #fff;
+  border-radius: 50%;
+  width: 36px;
+  height: 36px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin: 0 auto;
+}
+
+.step-actions {
+  display: flex;
+  gap: 8px;
+  justify-content: flex-end;
+  padding-right: 8px;
+}
+
+.empty-state {
+  text-align: center;
+  color: rgba(0, 0, 0, 0.6);
+  padding: 24px;
+}
+
+.mat-mdc-row:hover {
+  background-color: rgba(0, 0, 0, 0.04);
+} 

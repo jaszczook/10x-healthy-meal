@@ -1,0 +1,185 @@
+.summary-card {
+  margin: 1rem;
+  max-width: 800px;
+}
+
+.summary-list {
+  margin-bottom: 1rem;
+}
+
+.calorie-item {
+  display: flex;
+  align-items: center;
+  padding: 1rem 0;
+}
+
+.calorie-icon {
+  margin-right: 1rem;
+  &.on-target {
+    color: #4caf50;
+  }
+  &.under {
+    color: #2196f3;
+  }
+  &.over {
+    color: #f44336;
+  }
+}
+
+.calorie-text {
+  font-size: 1.1rem;
+  font-weight: 500;
+  &.on-target {
+    color: #4caf50;
+  }
+  &.under {
+    color: #2196f3;
+  }
+  &.over {
+    color: #f44336;
+  }
+}
+
+.target-info {
+  font-size: 0.9rem;
+  color: #666;
+  margin-left: 0.5rem;
+}
+
+.calorie-edit {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+}
+
+.calorie-input {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+
+  mat-form-field {
+    width: 120px;
+  }
+}
+
+.calorie-actions {
+  display: flex;
+  gap: 0.25rem;
+}
+
+.allergens-section {
+  margin: 1rem 0;
+  padding: 1rem;
+  background-color: #f5f5f5;
+  border-radius: 4px;
+
+  h4 {
+    margin: 0 0 0.5rem 0;
+    color: #333;
+  }
+}
+
+.allergen-chips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+}
+
+.allergen-chip {
+  display: inline-flex;
+  align-items: center;
+  padding: 0.25rem 0.75rem;
+  background-color: #e0e0e0;
+  border-radius: 16px;
+  font-size: 0.9rem;
+  color: #333;
+
+  &.user-allergen {
+    background-color: #ffebee;
+    color: #c62828;
+  }
+
+  &.user-intolerance {
+    background-color: #fff3e0;
+    color: #ef6c00;
+  }
+
+  mat-icon {
+    font-size: 1rem;
+    height: 1rem;
+    width: 1rem;
+    margin-right: 0.25rem;
+  }
+}
+
+.warnings-section {
+  margin: 1rem 0;
+  padding: 1rem;
+  background-color: #fff3e0;
+  border-radius: 4px;
+
+  h4 {
+    margin: 0 0 0.5rem 0;
+    color: #ef6c00;
+  }
+}
+
+.ingredient-warning {
+  margin: 0.5rem 0;
+  padding: 0.5rem;
+  background-color: #fff;
+  border-radius: 4px;
+
+  .warning-item {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    color: #666;
+
+    &.allergen-warning {
+      color: #c62828;
+    }
+
+    &.intolerance-warning {
+      color: #ef6c00;
+    }
+
+    mat-icon {
+      font-size: 1.2rem;
+      height: 1.2rem;
+      width: 1.2rem;
+    }
+  }
+}
+
+.calorie-status-info {
+  margin-top: 1rem;
+  padding: 1rem;
+  background-color: #f5f5f5;
+  border-radius: 4px;
+
+  .status-message {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    font-size: 0.9rem;
+
+    .success-message {
+      color: #4caf50;
+    }
+
+    .info-message {
+      color: #2196f3;
+    }
+
+    .warning-message {
+      color: #f44336;
+    }
+
+    mat-icon {
+      font-size: 1.2rem;
+      height: 1.2rem;
+      width: 1.2rem;
+    }
+  }
+} 

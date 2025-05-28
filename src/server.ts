@@ -6,11 +6,13 @@ import {
 } from '@angular/ssr/node';
 import express from 'express';
 import cors from 'cors';
+import cookieParser from 'cookie-parser';
 import { dirname, resolve } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import authRoutes from './api/auth/auth.routes';
 import health from './api/health/health.routes';
 import recipesRoutes from './api/recipes/recipes.routes';
+import userPreferencesRoutes from './api/users/user-preferences.routes';
 
 const serverDistFolder = dirname(fileURLToPath(import.meta.url));
 const browserDistFolder = resolve(serverDistFolder, '../browser');
@@ -21,9 +23,15 @@ const angularApp = new AngularNodeAppEngine();
 // Enable CORS for Angular development server
 app.use(cors({
   origin: 'http://localhost:4200',
-  methods: ['GET', 'POST', 'PUT', 'DELETE', 'PATCH'],
-  allowedHeaders: ['Content-Type', 'Authorization']
+  methods: ['GET', 'POST', 'PUT', 'DELETE', 'PATCH', 'OPTIONS'],
+  allowedHeaders: ['Content-Type', 'Authorization'],
+  credentials: true,
+  preflightContinue: false,
+  optionsSuccessStatus: 204
 }));
+
+// Parse cookies
+app.use(cookieParser());
 
 // Parse JSON request bodies
 app.use(express.json());
@@ -42,6 +50,7 @@ app.use(express.json());
 app.use('/api/auth', authRoutes);
 app.use('/api/health', health);
 app.use('/api/recipes', recipesRoutes);
+app.use('/api/users', userPreferencesRoutes);
 
 /**
  * Serve static files from /browser

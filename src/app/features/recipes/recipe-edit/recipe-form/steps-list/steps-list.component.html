@@ -1,0 +1,55 @@
+<div class="steps-container">
+  <div class="section-header">
+    <h3>Preparation Steps</h3>
+    <button mat-raised-button color="primary" (click)="addStep()">
+      <mat-icon>add</mat-icon>
+      Add Step
+    </button>
+  </div>
+
+  <mat-table [dataSource]="steps" class="steps-table">
+    <ng-container matColumnDef="order">
+      <mat-header-cell *matHeaderCellDef>Step</mat-header-cell>
+      <mat-cell *matCellDef="let step; let i = index">{{ i + 1 }}</mat-cell>
+    </ng-container>
+
+    <ng-container matColumnDef="description">
+      <mat-header-cell *matHeaderCellDef>Description</mat-header-cell>
+      <mat-cell *matCellDef="let step; let i = index">
+        <mat-form-field appearance="outline" class="full-width">
+          <input 
+            matInput 
+            [formControl]="getFormControl(i)"
+            (input)="onStepChange(i)"
+            placeholder="Describe the preparation step"
+            required>
+          @if (!getFormControl(i).value) {
+            <mat-error>Step description is required</mat-error>
+          }
+        </mat-form-field>
+      </mat-cell>
+    </ng-container>
+
+    <ng-container matColumnDef="actions">
+      <mat-header-cell *matHeaderCellDef>Actions</mat-header-cell>
+      <mat-cell *matCellDef="let step; let i = index">
+        <button 
+          mat-icon-button 
+          color="warn" 
+          (click)="removeStep(i)"
+          [disabled]="steps.length <= 1">
+          <mat-icon>delete</mat-icon>
+        </button>
+      </mat-cell>
+    </ng-container>
+
+    <mat-header-row *matHeaderRowDef="displayedColumns"></mat-header-row>
+    <mat-row *matRowDef="let row; columns: displayedColumns;"></mat-row>
+  </mat-table>
+
+  @if (steps.length === 0) {
+    <div class="empty-state">
+      <p>No steps added. Add your first preparation step.</p>
+    </div>
+  }
+</div> 
