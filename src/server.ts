@@ -6,6 +6,7 @@ import {
 } from '@angular/ssr/node';
 import express from 'express';
 import cors from 'cors';
+import cookieParser from 'cookie-parser';
 import { dirname, resolve } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import authRoutes from './api/auth/auth.routes';
@@ -22,8 +23,12 @@ const angularApp = new AngularNodeAppEngine();
 app.use(cors({
   origin: 'http://localhost:4200',
   methods: ['GET', 'POST', 'PUT', 'DELETE', 'PATCH'],
-  allowedHeaders: ['Content-Type', 'Authorization']
+  allowedHeaders: ['Content-Type', 'Authorization'],
+  credentials: true
 }));
+
+// Parse cookies
+app.use(cookieParser());
 
 // Parse JSON request bodies
 app.use(express.json());

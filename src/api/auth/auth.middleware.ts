@@ -17,6 +17,7 @@ export async function authMiddleware(
 ): Promise<void> {
   try {
     // Throws if no active session
+    console.log(req.cookies);
     await authService.getSession(req);
     next();
   } catch (error) {

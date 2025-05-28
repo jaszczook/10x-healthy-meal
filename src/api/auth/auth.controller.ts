@@ -50,19 +50,24 @@ export class AuthController {
 
   private setSessionCookies(res: Response, session: any): void {
     const cookieDomain = process.env['COOKIE_DOMAIN'] || 'localhost';
+    const isProduction = process.env['NODE_ENV'] === 'production';
+    
     res.cookie('sb-access-token', session.access_token, {
       httpOnly: true,
-      secure: true,
+      secure: isProduction,
       sameSite: 'lax',
       domain: cookieDomain,
-      maxAge: 3600 * 1000
+      maxAge: 3600 * 1000,
+      path: '/'
     });
+    
     res.cookie('sb-refresh-token', session.refresh_token, {
       httpOnly: true,
-      secure: true,
+      secure: isProduction,
       sameSite: 'lax',
       domain: cookieDomain,
-      maxAge: 7 * 24 * 3600 * 1000
+      maxAge: 7 * 24 * 3600 * 1000,
+      path: '/'
     });
   }
 
