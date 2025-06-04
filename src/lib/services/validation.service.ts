@@ -1,3 +1,5 @@
+import { UserPreferencesCommandModel } from '../../types/dto';
+
 export class ValidationService {
   validatePaginationParams(page: number, perPage: number): void {
     if (!Number.isInteger(page) || page < 1) {
@@ -39,5 +41,25 @@ export class ValidationService {
   private sanitizeSearchString(search: string): string {
     // Remove any characters that could be used for SQL injection
     return search.replace(/[%_]/g, '');
+  }
+
+  validateUserPreferences(preferences: UserPreferencesCommandModel): void {
+    if (preferences.target_calories !== null && preferences.target_calories !== undefined) {
+      if (typeof preferences.target_calories !== 'number' || preferences.target_calories < 0) {
+        throw new Error('Target calories must be a positive number');
+      }
+    }
+
+    if (preferences.allergies !== null && preferences.allergies !== undefined) {
+      if (!Array.isArray(preferences.allergies)) {
+        throw new Error('Allergies must be an array');
+      }
+    }
+
+    if (preferences.intolerances !== null && preferences.intolerances !== undefined) {
+      if (!Array.isArray(preferences.intolerances)) {
+        throw new Error('Intolerances must be an array');
+      }
+    }
   }
 } 

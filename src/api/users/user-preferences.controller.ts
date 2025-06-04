@@ -1,7 +1,7 @@
 import { UserPreferencesService } from '../../lib/services/user-preferences.service';
 import { ValidationService } from '../../lib/services/validation.service';
 import { ErrorLogService } from '../../lib/services/error-log.service';
-import { UserPreferencesDto } from '../../types/dto';
+import { UserPreferencesDto, UserPreferencesCommandModel } from '../../types/dto';
 import { SupabaseService } from '../../lib/supabase/supabase.service';
 
 export class UserPreferencesApiController {
@@ -28,6 +28,27 @@ export class UserPreferencesApiController {
         throw new Error('401 Unauthorized');
       }
       throw new Error('500 Internal Server Error');
+    }
+  }
+
+  async updatePreferences(preferences: UserPreferencesCommandModel): Promise<UserPreferencesDto> {
+    try {
+      const userId = await this.supabaseService.getCurrentUserId();
+
+      // Validate preferences
+      this.validationService.validateUserPreferences(preferences);
+
+      // Update preferences using the service
+      return await this.userPreferencesService.upsertPreferences(userId, preferences);
+    } catch (error) {
+      // Log error
+      await this.errorLogService.logError('updatePreferences', error);
+
+      // Rethrow with appropriate status code
+      if (error instanceof Error && error.message === 'Not authenticated') {
+        throw new Error('401 Unauthorized');
+      }
+      throw error;
     }
   }
 } 

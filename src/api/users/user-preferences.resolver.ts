@@ -5,7 +5,12 @@ import { UserPreferencesDto } from '../../types/dto';
 export class UserPreferencesResolver {
   constructor(private controller: UserPreferencesApiController) {}
 
-  async resolve(req: Request): Promise<UserPreferencesDto> {
+  async resolveGet(req: Request): Promise<UserPreferencesDto> {
     return this.controller.getCurrentUserPreferences();
+  }
+
+  async resolvePut(req: Request): Promise<UserPreferencesDto> {
+    const preferences = req.body;
+    return this.controller.updatePreferences(preferences);
   }
 } 

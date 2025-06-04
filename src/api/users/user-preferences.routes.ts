@@ -30,12 +30,31 @@ const resolver = new UserPreferencesResolver(controller);
 // Define routes
 router.get('/current/preferences', async (req, res) => {
   try {
-    const preferences = await resolver.resolve(req);
+    const preferences = await resolver.resolveGet(req);
     res.json(preferences);
   } catch (error) {
     if (error instanceof Error) {
       if (error.message === '401 Unauthorized') {
         res.status(401).json({ error: 'Not authenticated' });
+      } else {
+        res.status(500).json({ error: 'Internal Server Error' });
+      }
+    } else {
+      res.status(500).json({ error: 'Internal Server Error' });
+    }
+  }
+});
+
+router.put('/current/preferences', async (req, res) => {
+  try {
+    const result = await resolver.resolvePut(req);
+    res.json(result);
+  } catch (error) {
+    if (error instanceof Error) {
+      if (error.message === '401 Unauthorized') {
+        res.status(401).json({ error: 'Not authenticated' });
+      } else if (error.message.includes('must be')) {
+        res.status(400).json({ error: error.message });
       } else {
         res.status(500).json({ error: 'Internal Server Error' });
       }
