@@ -40,4 +40,23 @@ router.get('/', async (req, res) => {
   }
 });
 
+router.get('/:id', async (req, res) => {
+  try {
+    const result = await controller.getRecipe(req.params.id);
+    res.json(result);
+  } catch (error) {
+    if (error instanceof Error) {
+      if (error.message === '401 Unauthorized') {
+        res.status(401).json({ error: 'Not authenticated' });
+      } else if (error.message === '404 Not Found') {
+        res.status(404).json({ error: 'Recipe not found' });
+      } else {
+        res.status(500).json({ error: 'Internal Server Error' });
+      }
+    } else {
+      res.status(500).json({ error: 'Internal Server Error' });
+    }
+  }
+});
+
 export default router; 

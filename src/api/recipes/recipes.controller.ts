@@ -1,7 +1,7 @@
 import { RecipesService } from '../../lib/services/recipes.service';
 import { ValidationService } from '../../lib/services/validation.service';
 import { ErrorLogService } from '../../lib/services/error-log.service';
-import { RecipesListResponseDto } from '../../types/dto';
+import { RecipesListResponseDto, RecipeDetailDto } from '../../types/dto';
 import { SupabaseService } from '../../lib/supabase/supabase.service';
 
 export class RecipesApiController {
@@ -51,6 +51,32 @@ export class RecipesApiController {
       // Rethrow with appropriate status code
       if (error instanceof Error && error.message === 'Not authenticated') {
         throw new Error('401 Unauthorized');
+      }
+      throw new Error('500 Internal Server Error');
+    }
+  }
+
+  async getRecipe(recipeId: string): Promise<RecipeDetailDto> {
+    try {
+      const userId = await this.supabaseService.getCurrentUserId();
+
+      // Validate recipe ID
+      this.validationService.validateUuid(recipeId);
+
+      // Get recipe using the service
+      return await this.recipesService.getRecipeById(userId, recipeId);
+    } catch (error) {
+      // Log error
+      await this.errorLogService.logError('getRecipe', error);
+
+      // Rethrow with appropriate status code
+      if (error instanceof Error) {
+        if (error.message === 'Not authenticated') {
+          throw new Error('401 Unauthorized');
+        }
+        if (error.message === '404 Not Found') {
+          throw new Error('404 Not Found');
+        }
       }
       throw new Error('500 Internal Server Error');
     }

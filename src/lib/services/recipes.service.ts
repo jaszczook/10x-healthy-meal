@@ -1,4 +1,4 @@
-import { RecipeListItemDto, RecipesListResponseDto } from '../../types/dto';
+import { RecipeListItemDto, RecipesListResponseDto, RecipeDetailDto, RecipeDataDto } from '../../types/dto';
 import { RecipeEntity } from '../../types/entities';
 import { ErrorLogService } from './error-log.service';
 import { SupabaseService } from '../supabase/supabase.service';
@@ -65,6 +65,36 @@ export class RecipesService {
     }
   }
 
+  async getRecipeById(userId: string, recipeId: string): Promise<RecipeDetailDto> {
+    try {
+      // Build query
+      const { data, error } = await this.supabaseService.client
+        .from('recipes')
+        .select('*')
+        .eq('id', recipeId)
+        .eq('user_id', userId)
+        .single();
+
+      if (error) {
+        if (error.code === 'PGRST116') {
+          throw new Error('404 Not Found');
+        }
+        throw error;
+      }
+
+      if (!data) {
+        throw new Error('404 Not Found');
+      }
+
+      // Map entity to DTO
+      return this.mapToRecipeDetailDto(data);
+    } catch (error) {
+      // Log error
+      await this.errorLogService.logError(userId, error);
+      throw error;
+    }
+  }
+
   private mapToRecipeListItemDto(recipe: RecipeEntity): RecipeListItemDto {
     const recipeData = recipe.recipe_data as { calories?: number };
     return {
@@ -73,6 +103,71 @@ export class RecipesService {
       total_calories: recipeData?.calories || null,
       created_at: recipe.created_at,
       updated_at: recipe.updated_at
+    };
+  }
+
+  private mapToRecipeDetailDto(recipe: RecipeEntity): RecipeDetailDto {
+    const recipeData = this.validateAndTransformRecipeData(recipe.recipe_data);
+    
+    return {
+      id: recipe.id,
+      title: recipe.title,
+      recipe_data: recipeData,
+      created_at: recipe.created_at,
+      updated_at: recipe.updated_at
+    };
+  }
+
+  private validateAndTransformRecipeData(data: any): RecipeDataDto {
+    if (!data || typeof data !== 'object') {
+      throw new Error('Invalid recipe data format');
+    }
+
+    const { ingredients, steps, notes, calories } = data;
+
+    // Validate ingredients
+    if (!Array.isArray(ingredients)) {
+      throw new Error('Recipe ingredients must be an array');
+    }
+    const validatedIngredients = ingredients.map(ing => {
+      if (!ing.name || typeof ing.name !== 'string' ||
+          typeof ing.amount !== 'number' ||
+          !ing.unit || typeof ing.unit !== 'string') {
+        throw new Error('Invalid ingredient format');
+      }
+      return {
+        name: ing.name,
+        amount: ing.amount,
+        unit: ing.unit
+      };
+    });
+
+    // Validate steps
+    if (!Array.isArray(steps)) {
+      throw new Error('Recipe steps must be an array');
+    }
+    const validatedSteps = steps.map(step => {
+      if (!step.description || typeof step.description !== 'string') {
+        throw new Error('Invalid step format');
+      }
+      return {
+        description: step.description
+      };
+    });
+
+    // Validate optional fields
+    if (notes !== undefined && typeof notes !== 'string') {
+      throw new Error('Recipe notes must be a string');
+    }
+    if (calories !== undefined && typeof calories !== 'number') {
+      throw new Error('Recipe calories must be a number');
+    }
+
+    return {
+      ingredients: validatedIngredients,
+      steps: validatedSteps,
+      notes: notes,
+      calories: calories
     };
   }
 } 
