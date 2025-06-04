@@ -119,4 +119,15 @@ export class ValidationService {
       throw new Error('400 Recipe calories must be a non-negative number');
     }
   }
+
+  validateDeleteRecipeParams(recipeId: string): void {
+    // Validate UUID format
+    this.validateUuid(recipeId);
+
+    // Additional validation specific to deletion could be added here
+    // For example, checking if the recipe ID is not empty
+    if (!recipeId.trim()) {
+      throw new Error('400 Recipe ID cannot be empty');
+    }
+  }
 } 

@@ -131,6 +131,51 @@ export class RecipesService {
     }
   }
 
+  async deleteRecipe(userId: string, recipeId: string): Promise<void> {
+    try {
+      // First verify that the recipe exists and belongs to the user
+      const { data, error: fetchError } = await this.supabaseService.client
+        .from('recipes')
+        .select('id')
+        .eq('id', recipeId)
+        .eq('user_id', userId)
+        .single();
+
+      if (fetchError) {
+        if (fetchError.code === 'PGRST116') {
+          throw new Error('404 Not Found');
+        }
+        throw fetchError;
+      }
+
+      if (!data) {
+        throw new Error('404 Not Found');
+      }
+
+      // Delete the recipe
+      const { error: deleteError } = await this.supabaseService.client
+        .from('recipes')
+        .delete()
+        .eq('id', recipeId)
+        .eq('user_id', userId);
+
+      if (deleteError) {
+        throw deleteError;
+      }
+
+      // Log successful deletion
+      await this.errorLogService.logError(userId, {
+        message: `Recipe ${recipeId} successfully deleted`,
+        type: 'INFO',
+        timestamp: new Date().toISOString()
+      });
+    } catch (error) {
+      // Log error
+      await this.errorLogService.logError(userId, error);
+      throw error;
+    }
+  }
+
   private mapToRecipeListItemDto(recipe: RecipeEntity): RecipeListItemDto {
     const recipeData = recipe.recipe_data as { calories?: number };
     return {

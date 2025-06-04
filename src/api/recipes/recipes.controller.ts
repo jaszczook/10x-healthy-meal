@@ -108,4 +108,40 @@ export class RecipesApiController {
       throw new Error('500 Internal Server Error');
     }
   }
+
+  async deleteRecipe(recipeId: string): Promise<void> {
+    try {
+      const userId = await this.supabaseService.getCurrentUserId();
+
+      // Validate recipe ID using the new validation method
+      this.validationService.validateDeleteRecipeParams(recipeId);
+
+      // Delete recipe using the service
+      await this.recipesService.deleteRecipe(userId, recipeId);
+    } catch (error) {
+      // Log error
+      await this.errorLogService.logError('deleteRecipe', error);
+
+      // Rethrow with appropriate status code
+      if (error instanceof Error) {
+        if (error.message === 'Not authenticated') {
+          throw new Error('401 Unauthorized');
+        }
+        if (error.message === '404 Not Found') {
+          throw new Error('404 Not Found');
+        }
+        if (error.message.startsWith('400')) {
+          throw error; // Keep the 400 error message as is
+        }
+        // Handle specific database errors
+        if (error.message.includes('foreign key constraint')) {
+          throw new Error('400 Cannot delete recipe: it is referenced by other records');
+        }
+        if (error.message.includes('permission denied')) {
+          throw new Error('403 Forbidden: insufficient permissions');
+        }
+      }
+      throw new Error('500 Internal Server Error');
+    }
+  }
 } 

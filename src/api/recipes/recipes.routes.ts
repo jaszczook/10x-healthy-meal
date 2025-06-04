@@ -78,4 +78,23 @@ router.post('/', async (req, res) => {
   }
 });
 
+router.delete('/:id', async (req, res) => {
+  try {
+    await controller.deleteRecipe(req.params.id);
+    res.status(204).send();
+  } catch (error) {
+    if (error instanceof Error) {
+      if (error.message === '401 Unauthorized') {
+        res.status(401).json({ error: 'Not authenticated' });
+      } else if (error.message === '404 Not Found') {
+        res.status(404).json({ error: 'Recipe not found' });
+      } else {
+        res.status(500).json({ error: 'Internal Server Error' });
+      }
+    } else {
+      res.status(500).json({ error: 'Internal Server Error' });
+    }
+  }
+});
+
 export default router; 
