@@ -2,6 +2,7 @@ import { RecipeListItemDto, RecipesListResponseDto, RecipeDetailDto, RecipeDataD
 import { RecipeEntity } from '../../types/entities';
 import { ErrorLogService } from './error-log.service';
 import { SupabaseService } from '../supabase/supabase.service';
+import { CreateRecipeCommandModel } from '../../types/dto';
 
 export class RecipesService {
   constructor(
@@ -84,6 +85,41 @@ export class RecipesService {
 
       if (!data) {
         throw new Error('404 Not Found');
+      }
+
+      // Map entity to DTO
+      return this.mapToRecipeDetailDto(data);
+    } catch (error) {
+      // Log error
+      await this.errorLogService.logError(userId, error);
+      throw error;
+    }
+  }
+
+  async createRecipe(userId: string, recipeData: CreateRecipeCommandModel): Promise<RecipeDetailDto> {
+    try {
+      const now = new Date().toISOString();
+      const recipeEntity = {
+        user_id: userId,
+        title: recipeData.title,
+        recipe_data: recipeData.recipe_data,
+        created_at: now,
+        updated_at: now
+      };
+
+      // Insert recipe into database
+      const { data, error } = await this.supabaseService.client
+        .from('recipes')
+        .insert(recipeEntity)
+        .select()
+        .single();
+
+      if (error) {
+        throw error;
+      }
+
+      if (!data) {
+        throw new Error('Failed to create recipe');
       }
 
       // Map entity to DTO

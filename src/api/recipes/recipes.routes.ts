@@ -59,4 +59,23 @@ router.get('/:id', async (req, res) => {
   }
 });
 
+router.post('/', async (req, res) => {
+  try {
+    const result = await controller.createRecipe(req.body);
+    res.status(201).json(result);
+  } catch (error) {
+    if (error instanceof Error) {
+      if (error.message === '401 Unauthorized') {
+        res.status(401).json({ error: 'Not authenticated' });
+      } else if (error.message.startsWith('400')) {
+        res.status(400).json({ error: error.message.replace('400 ', '') });
+      } else {
+        res.status(500).json({ error: 'Internal Server Error' });
+      }
+    } else {
+      res.status(500).json({ error: 'Internal Server Error' });
+    }
+  }
+});
+
 export default router; 

@@ -3,6 +3,7 @@ import { ValidationService } from '../../lib/services/validation.service';
 import { ErrorLogService } from '../../lib/services/error-log.service';
 import { RecipesListResponseDto, RecipeDetailDto } from '../../types/dto';
 import { SupabaseService } from '../../lib/supabase/supabase.service';
+import { CreateRecipeCommandModel } from '../../types/dto';
 
 export class RecipesApiController {
   constructor(
@@ -76,6 +77,32 @@ export class RecipesApiController {
         }
         if (error.message === '404 Not Found') {
           throw new Error('404 Not Found');
+        }
+      }
+      throw new Error('500 Internal Server Error');
+    }
+  }
+
+  async createRecipe(recipeData: CreateRecipeCommandModel): Promise<RecipeDetailDto> {
+    try {
+      const userId = await this.supabaseService.getCurrentUserId();
+
+      // Validate input data
+      this.validationService.validateCreateRecipeCommand(recipeData);
+
+      // Create recipe using the service
+      return await this.recipesService.createRecipe(userId, recipeData);
+    } catch (error) {
+      // Log error
+      await this.errorLogService.logError('createRecipe', error);
+
+      // Rethrow with appropriate status code
+      if (error instanceof Error) {
+        if (error.message === 'Not authenticated') {
+          throw new Error('401 Unauthorized');
+        }
+        if (error.message.startsWith('400')) {
+          throw error; // Keep the 400 error message as is
         }
       }
       throw new Error('500 Internal Server Error');

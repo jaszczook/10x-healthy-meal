@@ -1,4 +1,5 @@
 import { UserPreferencesCommandModel } from '../../types/dto';
+import { CreateRecipeCommandModel } from '../../types/dto';
 
 export class ValidationService {
   validatePaginationParams(page: number, perPage: number): void {
@@ -67,6 +68,55 @@ export class ValidationService {
     const uuidRegex = /^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i;
     if (!uuidRegex.test(uuid)) {
       throw new Error('Invalid UUID format');
+    }
+  }
+
+  validateCreateRecipeCommand(recipe: CreateRecipeCommandModel): void {
+    if (!recipe.title || typeof recipe.title !== 'string') {
+      throw new Error('400 Recipe title is required and must be a string');
+    }
+
+    if (!recipe.recipe_data) {
+      throw new Error('400 Recipe data is required');
+    }
+
+    const { ingredients, steps, notes, calories } = recipe.recipe_data;
+
+    // Validate ingredients
+    if (!Array.isArray(ingredients) || ingredients.length === 0) {
+      throw new Error('400 Recipe must have at least one ingredient');
+    }
+
+    ingredients.forEach((ingredient, index) => {
+      if (!ingredient.name || typeof ingredient.name !== 'string') {
+        throw new Error(`400 Invalid ingredient name at index ${index}`);
+      }
+      if (typeof ingredient.amount !== 'number' || ingredient.amount <= 0) {
+        throw new Error(`400 Invalid ingredient amount at index ${index}`);
+      }
+      if (!ingredient.unit || typeof ingredient.unit !== 'string') {
+        throw new Error(`400 Invalid ingredient unit at index ${index}`);
+      }
+    });
+
+    // Validate steps
+    if (!Array.isArray(steps) || steps.length === 0) {
+      throw new Error('400 Recipe must have at least one step');
+    }
+
+    steps.forEach((step, index) => {
+      if (!step.description || typeof step.description !== 'string') {
+        throw new Error(`400 Invalid step description at index ${index}`);
+      }
+    });
+
+    // Validate optional fields
+    if (notes !== undefined && typeof notes !== 'string') {
+      throw new Error('400 Recipe notes must be a string');
+    }
+
+    if (calories !== undefined && (typeof calories !== 'number' || calories < 0)) {
+      throw new Error('400 Recipe calories must be a non-negative number');
     }
   }
 } 
