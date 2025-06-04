@@ -1,5 +1,7 @@
 import { UserPreferencesCommandModel } from '../../types/dto';
 import { CreateRecipeCommandModel } from '../../types/dto';
+import { UpdateRecipeCommandModel } from '../../types/dto';
+import { RecipeDataDto } from '../../types/dto';
 
 export class ValidationService {
   validatePaginationParams(page: number, perPage: number): void {
@@ -118,6 +120,26 @@ export class ValidationService {
     if (calories !== undefined && (typeof calories !== 'number' || calories < 0)) {
       throw new Error('400 Recipe calories must be a non-negative number');
     }
+  }
+
+  validateUpdateRecipeCommand(recipe: UpdateRecipeCommandModel): void {
+    if (!recipe) {
+      throw new Error('400 Recipe data is required');
+    }
+
+    if (!recipe.title || typeof recipe.title !== 'string' || recipe.title.trim().length === 0) {
+      throw new Error('400 Recipe title is required and must be a non-empty string');
+    }
+
+    if (!recipe.recipe_data) {
+      throw new Error('400 Recipe data is required');
+    }
+
+    this.validateRecipeData(recipe.recipe_data);
+  }
+
+  private validateRecipeData(recipeData: RecipeDataDto): void {
+    // ... existing code ...
   }
 
   validateDeleteRecipeParams(recipeId: string): void {

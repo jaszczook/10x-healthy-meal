@@ -1,7 +1,7 @@
 import { RecipesService } from '../../lib/services/recipes.service';
 import { ValidationService } from '../../lib/services/validation.service';
 import { ErrorLogService } from '../../lib/services/error-log.service';
-import { RecipesListResponseDto, RecipeDetailDto } from '../../types/dto';
+import { RecipesListResponseDto, RecipeDetailDto, UpdateRecipeCommandModel } from '../../types/dto';
 import { SupabaseService } from '../../lib/supabase/supabase.service';
 import { CreateRecipeCommandModel } from '../../types/dto';
 
@@ -136,6 +136,39 @@ export class RecipesApiController {
         // Handle specific database errors
         if (error.message.includes('foreign key constraint')) {
           throw new Error('400 Cannot delete recipe: it is referenced by other records');
+        }
+        if (error.message.includes('permission denied')) {
+          throw new Error('403 Forbidden: insufficient permissions');
+        }
+      }
+      throw new Error('500 Internal Server Error');
+    }
+  }
+
+  async updateRecipe(recipeId: string, recipeData: UpdateRecipeCommandModel): Promise<RecipeDetailDto> {
+    try {
+      const userId = await this.supabaseService.getCurrentUserId();
+
+      // Validate recipe ID and input data
+      this.validationService.validateUuid(recipeId);
+      this.validationService.validateUpdateRecipeCommand(recipeData);
+
+      // Update recipe using the service
+      return await this.recipesService.updateRecipe(userId, recipeId, recipeData);
+    } catch (error) {
+      // Log error
+      await this.errorLogService.logError('updateRecipe', error);
+
+      // Rethrow with appropriate status code
+      if (error instanceof Error) {
+        if (error.message === 'Not authenticated') {
+          throw new Error('401 Unauthorized');
+        }
+        if (error.message === '404 Not Found') {
+          throw new Error('404 Not Found');
+        }
+        if (error.message.startsWith('400')) {
+          throw error; // Keep the 400 error message as is
         }
         if (error.message.includes('permission denied')) {
           throw new Error('403 Forbidden: insufficient permissions');

@@ -2,7 +2,7 @@ import { RecipeListItemDto, RecipesListResponseDto, RecipeDetailDto, RecipeDataD
 import { RecipeEntity } from '../../types/entities';
 import { ErrorLogService } from './error-log.service';
 import { SupabaseService } from '../supabase/supabase.service';
-import { CreateRecipeCommandModel } from '../../types/dto';
+import { CreateRecipeCommandModel, UpdateRecipeCommandModel } from '../../types/dto';
 
 export class RecipesService {
   constructor(
@@ -169,6 +169,64 @@ export class RecipesService {
         type: 'INFO',
         timestamp: new Date().toISOString()
       });
+    } catch (error) {
+      // Log error
+      await this.errorLogService.logError(userId, error);
+      throw error;
+    }
+  }
+
+  async updateRecipe(
+    userId: string,
+    recipeId: string,
+    recipeData: UpdateRecipeCommandModel
+  ): Promise<RecipeDetailDto> {
+    try {
+      // First verify that the recipe exists and belongs to the user
+      const { data: existingRecipe, error: fetchError } = await this.supabaseService.client
+        .from('recipes')
+        .select('*')
+        .eq('id', recipeId)
+        .eq('user_id', userId)
+        .single();
+
+      if (fetchError) {
+        if (fetchError.code === 'PGRST116') {
+          throw new Error('404 Not Found');
+        }
+        throw fetchError;
+      }
+
+      if (!existingRecipe) {
+        throw new Error('404 Not Found');
+      }
+
+      const now = new Date().toISOString();
+      const updateData = {
+        title: recipeData.title,
+        recipe_data: recipeData.recipe_data,
+        updated_at: now
+      };
+
+      // Update recipe in database
+      const { data, error: updateError } = await this.supabaseService.client
+        .from('recipes')
+        .update(updateData)
+        .eq('id', recipeId)
+        .eq('user_id', userId)
+        .select()
+        .single();
+
+      if (updateError) {
+        throw updateError;
+      }
+
+      if (!data) {
+        throw new Error('Failed to update recipe');
+      }
+
+      // Map entity to DTO
+      return this.mapToRecipeDetailDto(data);
     } catch (error) {
       // Log error
       await this.errorLogService.logError(userId, error);
