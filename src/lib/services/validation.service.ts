@@ -2,6 +2,7 @@ import { UserPreferencesCommandModel } from '../../types/dto';
 import { CreateRecipeCommandModel } from '../../types/dto';
 import { UpdateRecipeCommandModel } from '../../types/dto';
 import { RecipeDataDto } from '../../types/dto';
+import { ValidationResultDto, ValidationError } from '../../types/dto';
 
 export class ValidationService {
   validatePaginationParams(page: number, perPage: number): void {
@@ -138,8 +139,74 @@ export class ValidationService {
     this.validateRecipeData(recipe.recipe_data);
   }
 
-  private validateRecipeData(recipeData: RecipeDataDto): void {
-    // ... existing code ...
+  validateRecipeData(recipeData: RecipeDataDto): ValidationResultDto {
+    const errors: ValidationError[] = [];
+
+    // Validate ingredients
+    if (!Array.isArray(recipeData.ingredients) || recipeData.ingredients.length === 0) {
+      errors.push({
+        field: 'ingredients',
+        message: 'Recipe must have at least one ingredient'
+      });
+    } else {
+      recipeData.ingredients.forEach((ingredient, index) => {
+        if (!ingredient.name || typeof ingredient.name !== 'string') {
+          errors.push({
+            field: `ingredients[${index}].name`,
+            message: 'Ingredient name is required and must be a string'
+          });
+        }
+        if (typeof ingredient.amount !== 'number' || ingredient.amount <= 0) {
+          errors.push({
+            field: `ingredients[${index}].amount`,
+            message: 'Ingredient amount must be a positive number'
+          });
+        }
+        if (!ingredient.unit || typeof ingredient.unit !== 'string') {
+          errors.push({
+            field: `ingredients[${index}].unit`,
+            message: 'Ingredient unit is required and must be a string'
+          });
+        }
+      });
+    }
+
+    // Validate steps
+    if (!Array.isArray(recipeData.steps) || recipeData.steps.length === 0) {
+      errors.push({
+        field: 'steps',
+        message: 'Recipe must have at least one step'
+      });
+    } else {
+      recipeData.steps.forEach((step, index) => {
+        if (!step.description || typeof step.description !== 'string') {
+          errors.push({
+            field: `steps[${index}].description`,
+            message: 'Step description is required and must be a string'
+          });
+        }
+      });
+    }
+
+    // Validate optional fields
+    if (recipeData.notes !== undefined && typeof recipeData.notes !== 'string') {
+      errors.push({
+        field: 'notes',
+        message: 'Recipe notes must be a string'
+      });
+    }
+
+    if (recipeData.calories !== undefined && (typeof recipeData.calories !== 'number' || recipeData.calories < 0)) {
+      errors.push({
+        field: 'calories',
+        message: 'Recipe calories must be a non-negative number'
+      });
+    }
+
+    return {
+      valid: errors.length === 0,
+      errors
+    };
   }
 
   validateDeleteRecipeParams(recipeId: string): void {

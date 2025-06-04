@@ -120,4 +120,25 @@ router.put('/:id', async (req, res) => {
   }
 });
 
+router.post('/:id/validate', async (req, res) => {
+  try {
+    const result = await controller.validateRecipe(req.params.id, req.body);
+    res.json(result);
+  } catch (error) {
+    if (error instanceof Error) {
+      if (error.message === '401 Unauthorized') {
+        res.status(401).json({ error: 'Not authenticated' });
+      } else if (error.message === '404 Not Found') {
+        res.status(404).json({ error: 'Recipe not found' });
+      } else if (error.message.startsWith('400')) {
+        res.status(400).json({ error: error.message.replace('400 ', '') });
+      } else {
+        res.status(500).json({ error: 'Internal Server Error' });
+      }
+    } else {
+      res.status(500).json({ error: 'Internal Server Error' });
+    }
+  }
+});
+
 export default router; 

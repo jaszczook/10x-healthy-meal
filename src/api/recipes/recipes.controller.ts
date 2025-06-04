@@ -1,9 +1,10 @@
 import { RecipesService } from '../../lib/services/recipes.service';
 import { ValidationService } from '../../lib/services/validation.service';
 import { ErrorLogService } from '../../lib/services/error-log.service';
-import { RecipesListResponseDto, RecipeDetailDto, UpdateRecipeCommandModel } from '../../types/dto';
+import { RecipesListResponseDto, RecipeDetailDto, UpdateRecipeCommandModel, RecipeDataDto } from '../../types/dto';
 import { SupabaseService } from '../../lib/supabase/supabase.service';
 import { CreateRecipeCommandModel } from '../../types/dto';
+import { ValidationResultDto } from '../../types/dto';
 
 export class RecipesApiController {
   constructor(
@@ -172,6 +173,86 @@ export class RecipesApiController {
         }
         if (error.message.includes('permission denied')) {
           throw new Error('403 Forbidden: insufficient permissions');
+        }
+      }
+      throw new Error('500 Internal Server Error');
+    }
+  }
+
+  async validateRecipe(recipeId: string, recipeData: RecipeDataDto): Promise<ValidationResultDto> {
+    try {
+      const userId = await this.supabaseService.getCurrentUserId();
+
+      // Validate recipe ID
+      this.validationService.validateUuid(recipeId);
+
+      // Check if recipe exists and belongs to user
+      const { data: existingRecipe, error: fetchError } = await this.supabaseService.client
+        .from('recipes')
+        .select('id')
+        .eq('id', recipeId)
+        .eq('user_id', userId)
+        .single();
+
+      if (fetchError) {
+        if (fetchError.code === 'PGRST116') {
+          throw new Error('404 Not Found');
+        }
+        throw fetchError;
+      }
+
+      if (!existingRecipe) {
+        throw new Error('404 Not Found');
+      }
+
+      // Validate recipe data
+      const validationResult = this.validationService.validateRecipeData(recipeData);
+
+      // Log validation failures with detailed information
+      if (!validationResult.valid) {
+        await this.errorLogService.logError('validateRecipe', {
+          message: 'Recipe validation failed',
+          type: 'VALIDATION_ERROR',
+          details: {
+            recipeId,
+            userId,
+            errors: validationResult.errors,
+            recipeData: {
+              ingredientsCount: recipeData.ingredients?.length || 0,
+              stepsCount: recipeData.steps?.length || 0,
+              hasNotes: recipeData.notes !== undefined,
+              hasCalories: recipeData.calories !== undefined
+            }
+          }
+        });
+      }
+
+      return validationResult;
+    } catch (error) {
+      // Log error with enhanced context
+      await this.errorLogService.logError('validateRecipe', {
+        message: error instanceof Error ? error.message : 'Unknown error during recipe validation',
+        type: 'VALIDATION_ERROR',
+        details: {
+          recipeId,
+          error: error instanceof Error ? {
+            name: error.name,
+            message: error.message,
+            stack: error.stack
+          } : error
+        }
+      });
+
+      // Rethrow with appropriate status code
+      if (error instanceof Error) {
+        if (error.message === 'Not authenticated') {
+          throw new Error('401 Unauthorized');
+        }
+        if (error.message === '404 Not Found') {
+          throw new Error('404 Not Found');
+        }
+        if (error.message.startsWith('400')) {
+          throw error; // Keep the 400 error message as is
         }
       }
       throw new Error('500 Internal Server Error');
