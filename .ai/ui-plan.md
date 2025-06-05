@@ -1,5 +1,3 @@
-
-
 Read file: .ai/prd.md
 
 Read file: .ai/api-plan.md
@@ -77,9 +75,9 @@ Architektura UI jest zaprojektowana tak, aby wspierać główne przypadki użyci
   - Możliwość anulowania procesu analizy
   - Komunikat o pustym polu tekstowym przy próbie wysłania
 
-### 2.5. Widok edycji przepisu (po analizie AI)
-- **Ścieżka:** `/recipes/edit/new` lub `/recipes/edit/:id`
-- **Główny cel:** Edycja struktury przepisu wygenerowanej przez AI lub istniejącego przepisu
+### 2.5. Widok edycji/przeglądania przepisu
+- **Ścieżka:** `/recipes/edit/new` lub `/recipes/:id`
+- **Główny cel:** Edycja struktury przepisu wygenerowanej przez AI lub istniejącego przepisu, z możliwością przełączania między trybem edycji i podglądu
 - **Kluczowe informacje:** Wszystkie składniki przepisu, jednostki, kroki, notatki, kalorie
 - **Kluczowe komponenty:**
   - Mat-Stepper lub Mat-Tab-Group dzielący formularz na sekcje
@@ -87,29 +85,19 @@ Architektura UI jest zaprojektowana tak, aby wspierać główne przypadki użyci
   - Dynamiczny formularz dla kroków przygotowania
   - Mat-Form-Field dla notatek i innych informacji
   - Podświetlanie potencjalnych alergenów
-  - Mat-Button do przejścia do podsumowania
+  - Panel podsumowania z listą składników i wartością kaloryczną
+  - Przyciski "Zapisz" i "Anuluj"
+  - Przycisk przełączania między trybem edycji i podglądu
 - **UX/Dostępność/Bezpieczeństwo:**
   - Inline walidacja formularza
   - Wizualne oznaczenia alergenów zgodnie z preferencjami
   - Automatyczne zapisywanie wersji roboczej
   - Przyciski do dodawania/usuwania elementów listy
-
-### 2.6. Widok podsumowania przepisu
-- **Ścieżka:** `/recipes/summary`
-- **Główny cel:** Wyświetlenie podsumowania przepisu przed finalnym zapisaniem
-- **Kluczowe informacje:** Lista składników, łączna wartość kaloryczna, wszystkie dane przepisu
-- **Kluczowe komponenty:**
-  - Mat-Card z podsumowaniem
-  - Mat-Table wyświetlająca listę składników
-  - Wykres lub informacja graficzna o wartości kalorycznej
-  - Mat-Button "Zapisz" i Mat-Button "Anuluj"
-- **UX/Dostępność/Bezpieczeństwo:**
-  - Wyróżnienie alergenów i składników niepasujących do preferencji
   - Dialog potwierdzający zapisanie
   - Informacja o zapisaniu w MatSnackBar
-  - Możliwość powrotu do edycji
+  - Dostęp tylko dla właściciela przepisu
 
-### 2.7. Widok szczegółów przepisu
+### 2.6. Widok szczegółów przepisu
 - **Ścieżka:** `/recipes/:id`
 - **Główny cel:** Wyświetlenie pełnych informacji o zapisanym przepisie
 - **Kluczowe informacje:** Wszystkie dane przepisu, opcje edycji i usunięcia
@@ -144,16 +132,12 @@ Architektura UI jest zaprojektowana tak, aby wspierać główne przypadki użyci
    - Wkleja niesformatowany tekst przepisu i klika "Analizuj"
    - System wyświetla wskaźnik ładowania podczas przetwarzania AI (maks. 60s)
 
-4. **Edycja przepisu po analizie AI**
+4. **Edycja i zapisanie przepisu**
    - Po zakończeniu analizy użytkownik jest przenoszony do `/recipes/edit/new`
    - Edytuje dane wygenerowane przez AI (składniki, kroki, notatki)
    - System automatycznie oznacza alergeny zgodnie z preferencjami
-   - Po zakończeniu edycji klika "Dalej" lub "Podsumowanie"
-
-5. **Podsumowanie i zapisanie**
-   - Przegląda podsumowanie przepisu na `/recipes/summary`
-   - Sprawdza listę składników i wartość kaloryczną
-   - Jeśli wszystko jest poprawne, klika "Zapisz"
+   - W trakcie edycji widzi podsumowanie składników i kalorii
+   - Po zakończeniu edycji klika "Zapisz"
    - System zapisuje przepis i wyświetla potwierdzenie
    - Użytkownik zostaje przekierowany do dashboardu z nowo dodanym przepisem
 
@@ -161,13 +145,12 @@ Architektura UI jest zaprojektowana tak, aby wspierać główne przypadki użyci
 
 #### 3.2.1. Przeglądanie i edycja istniejącego przepisu
 1. Z dashboardu użytkownik wybiera przepis z listy
-2. Zostaje przeniesiony do widoku szczegółów `/recipes/:id`
-3. Może przejrzeć wszystkie informacje o przepisie
-4. W celu edycji klika "Edytuj" i przechodzi do `/recipes/edit/:id`
-5. Po zakończeniu edycji przechodzi do podsumowania i zapisuje zmiany
+2. Zostaje przeniesiony do widoku `/recipes/:id`
+3. Może przełączać się między trybem podglądu i edycji
+4. Po zakończeniu edycji zapisuje zmiany
 
 #### 3.2.2. Usuwanie przepisu
-1. Z widoku szczegółów przepisu użytkownik klika "Usuń"
+1. Z widoku przepisu użytkownik klika "Usuń"
 2. System wyświetla dialog potwierdzający operację
 3. Po potwierdzeniu przepis jest usuwany, a użytkownik wraca do dashboardu
 

@@ -67,39 +67,34 @@ W zakresie MVP nie będzie:
   - edycja składników, ilości, jednostek, kroków i notatek jest możliwa w formularzu  
   - zmiany są walidowane (ilości >0)  
   - jednostki miar są akceptowane w dowolnym formacie tekstowym  
-  - po zatwierdzeniu aktualizowany jest podgląd podsumowania
+  - w trakcie edycji wyświetlane jest podsumowanie składników i kalorii
+  - przycisk "Zapisz" dodaje przepis do bazy danych
+  - przycisk "Anuluj" wraca do listy przepisów
 
 - ID: US-005  
-  Tytuł: Ekran podsumowania przepisu  
-  Opis: Użytkownik widzi listę składników i łączną wartość kaloryczną przed finalnym zapisem.  
-  Kryteria akceptacji:  
-  - wyświetlana jest tabela składników i suma kalorii  
-  - przycisk „Zapisz” dodaje przepis do bazy danych  
-  - przycisk „Anuluj” wraca do edycji JSON
-
-- ID: US-006  
   Tytuł: Zapisanie nowego przepisu  
-  Opis: Po zatwierdzeniu podsumowania nowy przepis jest zapisywany w bazie i pojawia się na liście przepisów.  
+  Opis: Po zatwierdzeniu edycji nowy przepis jest zapisywany w bazie i pojawia się na liście przepisów.  
   Kryteria akceptacji:  
   - przy zapisie zdarzenie `recipe_created` jest logowane w bazie  
   - użytkownik widzi potwierdzenie sukcesu  
   - nowy przepis pojawia się w widoku listy
 
-- ID: US-007  
+- ID: US-006  
   Tytuł: Przeglądanie zapisanych przepisów  
   Opis: Użytkownik widzi listę wszystkich swoich przepisów, może otworzyć szczegóły.  
   Kryteria akceptacji:  
   - widok listy zawiera tytuł przepisu, datę utworzenia i skrócone podsumowanie kalorii  
   - kliknięcie przepisu otwiera stronę ze szczegółami i możliwością edycji
+  - w widoku szczegółów użytkownik może przełączać się między trybem podglądu i edycji
 
-- ID: US-008  
+- ID: US-007  
   Tytuł: Usuwanie przepisu  
   Opis: Użytkownik może usunąć zapisany przepis z potwierdzeniem akcji.  
   Kryteria akceptacji:  
-  - przycisk „Usuń” przy każdym przepisie wyświetla okno potwierdzenia  
+  - przycisk "Usuń" przy każdym przepisie wyświetla okno potwierdzenia  
   - po potwierdzeniu przepis jest usuwany, a lista odświeżana
 
-- ID: US-009  
+- ID: US-008  
   Tytuł: Kontrola dostępu do przepisów  
   Opis: Tylko właściciel przepisu może go przeglądać, edytować lub usuwać.  
   Kryteria akceptacji:  
