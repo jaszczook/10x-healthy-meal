@@ -2,14 +2,14 @@
   <app-multi-select
     label="Allergies"
     [options]="allergyOptions"
-    [value]="initialData?.allergies || []"
+    [value]="form.get('allergies')?.value || []"
     (onChange)="onAllergiesChange($event)"
   ></app-multi-select>
 
   <app-multi-select
     label="Intolerances"
     [options]="intoleranceOptions"
-    [value]="initialData?.intolerances || []"
+    [value]="form.get('intolerances')?.value || []"
     (onChange)="onIntolerancesChange($event)"
   ></app-multi-select>
 

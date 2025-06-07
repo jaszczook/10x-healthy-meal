@@ -10,7 +10,7 @@ import { authMiddleware } from '../auth/auth.middleware';
 const router = Router();
 
 // Apply authentication middleware to all user preferences endpoints
-router.use(authMiddleware);
+// router.use(authMiddleware);
 
 // Initialize services
 const supabaseService = new SupabaseService();

@@ -1,9 +1,9 @@
 <mat-form-field class="w-full">
   <mat-label>{{ label }}</mat-label>
   <mat-chip-grid #chipGrid aria-label="Selection">
-    @for (item of selectedItems(); track item) {
+    @for (item of selectedItems(); track item.key) {
       <mat-chip-row (removed)="remove(item)">
-        {{ item }}
+        {{ item.label }}
         <button matChipRemove>
           <mat-icon>cancel</mat-icon>
         </button>
@@ -17,8 +17,8 @@
     [matChipInputFor]="chipGrid"
     (matChipInputTokenEnd)="add($event)">
   <mat-autocomplete #auto="matAutocomplete" (optionSelected)="selected($event)">
-    @for (item of filteredItems | async; track item) {
-      <mat-option [value]="item">{{ item }}</mat-option>
+    @for (item of filteredItems | async; track item.key) {
+      <mat-option [value]="item">{{ item.label }}</mat-option>
     }
   </mat-autocomplete>
 </mat-form-field> 

@@ -26,11 +26,19 @@ import { UserPreferencesDto, UserPreferencesCommandModel } from '../../../../../
 export class PreferencesFormComponent {
   @Input() set initialData(value: UserPreferencesDto | null) {
     if (value) {
+      // Convert backend values to proper case using the options mapping
+      const normalizedAllergies = (value.allergies || []).map(a => 
+        this.allergyOptions.find(opt => opt.key === a.toLowerCase())?.key || a.toLowerCase()
+      );
+      const normalizedIntolerances = (value.intolerances || []).map(i => 
+        this.intoleranceOptions.find(opt => opt.key === i.toLowerCase())?.key || i.toLowerCase()
+      );
+
       this.form.patchValue({
         target_calories: value.target_calories,
-        allergies: value.allergies || [],
-        intolerances: value.intolerances || []
-      });
+        allergies: normalizedAllergies,
+        intolerances: normalizedIntolerances
+      }, { emitEvent: true });
     }
   }
 
@@ -48,21 +56,21 @@ export class PreferencesFormComponent {
 
   // These would typically come from a service
   allergyOptions = [
-    'Peanuts',
-    'Tree Nuts',
-    'Milk',
-    'Eggs',
-    'Soy',
-    'Wheat',
-    'Fish',
-    'Shellfish'
+    { key: 'peanuts', label: 'Peanuts' },
+    { key: 'tree_nuts', label: 'Tree Nuts' },
+    { key: 'milk', label: 'Milk' },
+    { key: 'eggs', label: 'Eggs' },
+    { key: 'soy', label: 'Soy' },
+    { key: 'wheat', label: 'Wheat' },
+    { key: 'fish', label: 'Fish' },
+    { key: 'shellfish', label: 'Shellfish' }
   ];
 
   intoleranceOptions = [
-    'Lactose',
-    'Gluten',
-    'Fructose',
-    'Histamine'
+    { key: 'lactose', label: 'Lactose' },
+    { key: 'gluten', label: 'Gluten' },
+    { key: 'fructose', label: 'Fructose' },
+    { key: 'histamine', label: 'Histamine' }
   ];
 
   onSubmit(): void {
@@ -72,10 +80,18 @@ export class PreferencesFormComponent {
   }
 
   onAllergiesChange(allergies: string[]): void {
-    this.form.patchValue({ allergies });
+    // Convert display values back to keys for storage
+    const normalizedAllergies = allergies.map(a => 
+      this.allergyOptions.find(opt => opt.label === a)?.key || a.toLowerCase()
+    );
+    this.form.patchValue({ allergies: normalizedAllergies });
   }
 
   onIntolerancesChange(intolerances: string[]): void {
-    this.form.patchValue({ intolerances });
+    // Convert display values back to keys for storage
+    const normalizedIntolerances = intolerances.map(i => 
+      this.intoleranceOptions.find(opt => opt.label === i)?.key || i.toLowerCase()
+    );
+    this.form.patchValue({ intolerances: normalizedIntolerances });
   }
 } 
