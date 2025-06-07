@@ -17,6 +17,7 @@ export class UserPreferencesService {
       const { data, error } = await this.supabaseService.client
         .from('user_preferences')
         .select('*')
+        .limit(1)
         .single();
 
       if (error) {
