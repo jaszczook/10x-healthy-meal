@@ -1,0 +1,15 @@
+<div class="container mx-auto p-4">
+  <mat-card>
+    <mat-card-header>
+      <mat-card-title>User Preferences</mat-card-title>
+      <mat-card-subtitle>Set your dietary preferences and restrictions</mat-card-subtitle>
+    </mat-card-header>
+    <mat-card-content>
+      <app-preferences-form
+        [initialData]="preferences()"
+        [isLoading]="isLoading()"
+        (submit)="onSubmit($event)"
+      ></app-preferences-form>
+    </mat-card-content>
+  </mat-card>
+</div> 

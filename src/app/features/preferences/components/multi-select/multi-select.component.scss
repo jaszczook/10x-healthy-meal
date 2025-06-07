@@ -1,0 +1,31 @@
+:host {
+  display: block;
+  margin-bottom: 16px;
+}
+
+mat-form-field {
+  width: 100%;
+}
+
+mat-chip-row {
+  min-height: 32px;
+  margin: 4px;
+}
+
+mat-chip-row .mat-mdc-chip-remove {
+  opacity: 0.6;
+  transition: opacity 0.2s ease;
+
+  &:hover {
+    opacity: 1;
+  }
+}
+
+input {
+  font-size: 16px;
+  padding: 8px 0;
+}
+
+.mat-mdc-autocomplete-panel {
+  max-height: 256px;
+} 

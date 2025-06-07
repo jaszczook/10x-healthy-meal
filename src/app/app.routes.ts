@@ -18,6 +18,11 @@ export const routes: Routes = [
     // TODO: Add AuthGuard
   },
   {
+    path: 'preferences',
+    loadComponent: () => import('./features/preferences/pages/preferences-page/preferences-page.component').then(m => m.PreferencesPageComponent),
+    // TODO: Add AuthGuard
+  },
+  {
     path: '',
     redirectTo: 'dashboard',
     pathMatch: 'full'
