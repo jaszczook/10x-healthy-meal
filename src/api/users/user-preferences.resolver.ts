@@ -6,11 +6,11 @@ export class UserPreferencesResolver {
   constructor(private controller: UserPreferencesApiController) {}
 
   async resolveGet(req: Request): Promise<UserPreferencesDto> {
-    return this.controller.getCurrentUserPreferences();
+    return this.controller.getCurrentUserPreferences(req);
   }
 
   async resolvePut(req: Request): Promise<UserPreferencesDto> {
     const preferences = req.body;
-    return this.controller.updatePreferences(preferences);
+    return this.controller.updatePreferences(req, preferences);
   }
 } 

@@ -2,6 +2,8 @@ import { Injectable } from '@angular/core';
 import { ErrorLogService } from './error-log.service';
 import { SupabaseService } from '../supabase/supabase.service';
 import { UserPreferencesCommandModel, UserPreferencesDto } from '../../types/dto';
+import { AuthService } from './auth.service';
+import { Request } from 'express';
 
 @Injectable({
   providedIn: 'root'
@@ -9,12 +11,14 @@ import { UserPreferencesCommandModel, UserPreferencesDto } from '../../types/dto
 export class UserPreferencesService {
   constructor(
     private readonly errorLogService: ErrorLogService,
-    private readonly supabaseService: SupabaseService
+    private readonly supabaseService: SupabaseService,
+    private readonly authService: AuthService
   ) {}
 
-  async getCurrentUserPreferences(): Promise<UserPreferencesDto | null> {
+  async getCurrentUserPreferences(req: Request): Promise<UserPreferencesDto | null> {
     try {
-      const { data: { user } } = await this.supabaseService.client.auth.getUser();
+      const { user } = await this.authService.getSession(req);
+      console.log('chuj');
       console.log(user);
       if (!user) {
         return null;

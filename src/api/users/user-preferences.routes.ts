@@ -5,6 +5,7 @@ import { ErrorLogService } from '../../lib/services/error-log.service';
 import { ValidationService } from '../../lib/services/validation.service';
 import { UserPreferencesService } from '../../lib/services/user-preferences.service';
 import { SupabaseService } from '../../lib/supabase/supabase.service';
+import { AuthService } from '../../lib/services/auth.service';
 import { authMiddleware } from '../auth/auth.middleware';
 
 const router = Router();
@@ -15,7 +16,8 @@ router.use(authMiddleware);
 // Initialize services
 const supabaseService = new SupabaseService();
 const errorLogService = new ErrorLogService(supabaseService);
-const userPreferencesService = new UserPreferencesService(errorLogService, supabaseService);
+const authService = new AuthService(supabaseService);
+const userPreferencesService = new UserPreferencesService(errorLogService, supabaseService, authService);
 const validationService = new ValidationService();
 
 // Initialize controller and resolver
@@ -23,7 +25,8 @@ const controller = new UserPreferencesApiController(
   userPreferencesService,
   validationService,
   errorLogService,
-  supabaseService
+  supabaseService,
+  authService
 );
 const resolver = new UserPreferencesResolver(controller);
 
