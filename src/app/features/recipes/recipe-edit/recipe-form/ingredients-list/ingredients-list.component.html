@@ -1,0 +1,77 @@
+<div class="ingredients-container">
+  <div class="section-header">
+    <h3>Składniki</h3>
+    <button mat-raised-button color="primary" (click)="addIngredient()">
+      <mat-icon>add</mat-icon>
+      Dodaj składnik
+    </button>
+  </div>
+
+  <mat-table [dataSource]="ingredients" class="ingredients-table">
+    <ng-container matColumnDef="name">
+      <mat-header-cell *matHeaderCellDef>Nazwa</mat-header-cell>
+      <mat-cell *matCellDef="let ingredient; let i = index">
+        <mat-form-field appearance="outline" class="full-width">
+          <input 
+            matInput 
+            [value]="ingredient.name"
+            (input)="updateIngredient(i, 'name', $any($event.target).value)"
+            placeholder="Nazwa składnika"
+            required>
+        </mat-form-field>
+      </mat-cell>
+    </ng-container>
+
+    <ng-container matColumnDef="amount">
+      <mat-header-cell *matHeaderCellDef>Ilość</mat-header-cell>
+      <mat-cell *matCellDef="let ingredient; let i = index">
+        <mat-form-field appearance="outline" class="amount-field">
+          <input 
+            matInput 
+            type="number"
+            [value]="ingredient.amount"
+            (input)="updateIngredient(i, 'amount', +$any($event.target).value)"
+            placeholder="0"
+            min="0"
+            step="0.1"
+            required>
+        </mat-form-field>
+      </mat-cell>
+    </ng-container>
+
+    <ng-container matColumnDef="unit">
+      <mat-header-cell *matHeaderCellDef>Jednostka</mat-header-cell>
+      <mat-cell *matCellDef="let ingredient; let i = index">
+        <mat-form-field appearance="outline" class="unit-field">
+          <mat-select 
+            [value]="ingredient.unit"
+            (selectionChange)="updateIngredient(i, 'unit', $event.value)">
+            <mat-option *ngFor="let unit of units" [value]="unit">
+              {{ unit }}
+            </mat-option>
+          </mat-select>
+        </mat-form-field>
+      </mat-cell>
+    </ng-container>
+
+    <ng-container matColumnDef="actions">
+      <mat-header-cell *matHeaderCellDef>Akcje</mat-header-cell>
+      <mat-cell *matCellDef="let ingredient; let i = index">
+        <button 
+          mat-icon-button 
+          color="warn" 
+          (click)="removeIngredient(i)"
+          [disabled]="ingredients.length <= 1">
+          <mat-icon>delete</mat-icon>
+        </button>
+      </mat-cell>
+    </ng-container>
+
+    <mat-header-row *matHeaderRowDef="displayedColumns"></mat-header-row>
+    <mat-row *matRowDef="let row; columns: displayedColumns;"></mat-row>
+  </mat-table>
+
+  <div *ngIf="ingredients.length === 0" class="empty-state">
+    <p>Brak składników. Dodaj pierwszy składnik.</p>
+  </div>
+</div> 

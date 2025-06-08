@@ -1,0 +1,81 @@
+<mat-card class="summary-card">
+  <mat-card-header>
+    <mat-card-title>Podsumowanie przepisu</mat-card-title>
+  </mat-card-header>
+  
+  <mat-card-content>
+    <!-- Calorie Information -->
+    <mat-list class="summary-list">
+      <mat-list-item class="calorie-item">
+        <mat-icon matListItemIcon [class]="'calorie-icon ' + caloriesStatus">
+          local_fire_department
+        </mat-icon>
+        <span matListItemTitle>Kalorie</span>
+        <span matListItemLine class="calorie-text" [class]="caloriesStatus">
+          {{ summary.totalCalories }} kcal
+          <span *ngIf="userPreferences?.target_calories" class="target-info">
+            (cel: {{ userPreferences?.target_calories }} kcal)
+          </span>
+        </span>
+      </mat-list-item>
+
+      <!-- Ingredients Count -->
+      <mat-list-item>
+        <mat-icon matListItemIcon>restaurant</mat-icon>
+        <span matListItemTitle>Składniki</span>
+        <span matListItemLine>{{ summary.ingredients.length }} składników</span>
+      </mat-list-item>
+    </mat-list>
+
+    <!-- Allergens Section -->
+    <div *ngIf="allergens.length > 0" class="allergens-section">
+      <h4>Wykryte alergeny</h4>
+      <div class="allergen-chips">
+        <span 
+          *ngFor="let allergen of allergens" 
+          class="allergen-chip"
+          [class.user-allergen]="isUserAllergen(allergen)"
+          [class.user-intolerance]="isUserIntolerance(allergen)">
+          <mat-icon *ngIf="isUserAllergen(allergen) || isUserIntolerance(allergen)">warning</mat-icon>
+          {{ allergen }}
+        </span>
+      </div>
+    </div>
+
+    <!-- User Warnings -->
+    <div *ngIf="userPreferences" class="warnings-section">
+      <div *ngIf="userAllergens.length > 0 || userIntolerances.length > 0" class="user-warnings">
+        <h4>Ostrzeżenia dla Twoich preferencji</h4>
+        
+        <div *ngFor="let ingredient of summary.ingredients" class="ingredient-warning">
+          <div *ngIf="isUserAllergen(ingredient.name)" class="warning-item allergen-warning">
+            <mat-icon>error</mat-icon>
+            <span>{{ ingredient.name }} może zawierać alergeny z Twojej listy</span>
+          </div>
+          <div *ngIf="isUserIntolerance(ingredient.name)" class="warning-item intolerance-warning">
+            <mat-icon>info</mat-icon>
+            <span>{{ ingredient.name }} może zawierać składniki które nie tolerujesz</span>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Calorie Status Info -->
+    <div *ngIf="userPreferences?.target_calories" class="calorie-status-info">
+      <div [ngSwitch]="caloriesStatus" class="status-message">
+        <div *ngSwitchCase="'on-target'" class="success-message">
+          <mat-icon>check_circle</mat-icon>
+          <span>Kalorie są zgodne z Twoim celem (±10%)</span>
+        </div>
+        <div *ngSwitchCase="'under'" class="info-message">
+          <mat-icon>trending_down</mat-icon>
+          <span>Przepis ma mniej kalorii niż Twój cel</span>
+        </div>
+        <div *ngSwitchCase="'over'" class="warning-message">
+          <mat-icon>trending_up</mat-icon>
+          <span>Przepis ma więcej kalorii niż Twój cel</span>
+        </div>
+      </div>
+    </div>
+  </mat-card-content>
+</mat-card> 

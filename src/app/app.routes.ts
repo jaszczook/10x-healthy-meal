@@ -33,6 +33,16 @@ export const routes: Routes = [
           .then(m => m.RecipeNewComponent)
       },
       {
+        path: 'edit/new',
+        loadComponent: () => import('./features/recipes/recipe-edit/recipe-edit-view.component')
+          .then(m => m.RecipeEditViewComponent)
+      },
+      {
+        path: 'edit/:id',
+        loadComponent: () => import('./features/recipes/recipe-edit/recipe-edit-view.component')
+          .then(m => m.RecipeEditViewComponent)
+      },
+      {
         path: ':id',
         loadComponent: () => import('./features/recipes/recipe-details/recipe-details.component')
           .then(m => m.RecipeDetailsComponent)

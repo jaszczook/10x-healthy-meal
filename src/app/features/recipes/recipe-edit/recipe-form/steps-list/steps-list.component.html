@@ -1,0 +1,55 @@
+<div class="steps-container">
+  <div class="section-header">
+    <h3>Kroki przygotowania</h3>
+    <button mat-raised-button color="primary" (click)="addStep()">
+      <mat-icon>add</mat-icon>
+      Dodaj krok
+    </button>
+  </div>
+
+  <mat-list class="steps-list">
+    <mat-list-item *ngFor="let step of steps; let i = index" class="step-item">
+      <div class="step-content">
+        <div class="step-number">{{ step.order }}</div>
+        <mat-form-field appearance="outline" class="step-description">
+          <textarea 
+            matInput 
+            [value]="step.description"
+            (input)="updateStep(i, $any($event.target).value)"
+            placeholder="Opisz krok przygotowania"
+            rows="2"
+            required>
+          </textarea>
+        </mat-form-field>
+        <div class="step-actions">
+          <button 
+            mat-icon-button 
+            (click)="moveStep(i, 'up')"
+            [disabled]="i === 0"
+            matTooltip="Przenieś w górę">
+            <mat-icon>keyboard_arrow_up</mat-icon>
+          </button>
+          <button 
+            mat-icon-button 
+            (click)="moveStep(i, 'down')"
+            [disabled]="i === steps.length - 1"
+            matTooltip="Przenieś w dół">
+            <mat-icon>keyboard_arrow_down</mat-icon>
+          </button>
+          <button 
+            mat-icon-button 
+            color="warn" 
+            (click)="removeStep(i)"
+            [disabled]="steps.length <= 1"
+            matTooltip="Usuń krok">
+            <mat-icon>delete</mat-icon>
+          </button>
+        </div>
+      </div>
+    </mat-list-item>
+  </mat-list>
+
+  <div *ngIf="steps.length === 0" class="empty-state">
+    <p>Brak kroków. Dodaj pierwszy krok przygotowania.</p>
+  </div>
+</div> 

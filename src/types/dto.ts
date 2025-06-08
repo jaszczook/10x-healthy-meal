@@ -104,4 +104,37 @@ export interface ErrorLogDto {
   created_at: string | null;
 }
 
-export type ErrorLogsListResponseDto = PaginatedResponse<ErrorLogDto>; 
+export type ErrorLogsListResponseDto = PaginatedResponse<ErrorLogDto>;
+
+/**
+ * Recipe Form ViewModels
+ */
+export interface RecipeFormViewModel {
+  title: string;
+  ingredients: IngredientViewModel[];
+  steps: StepViewModel[];
+  notes?: string;
+  calories?: number;
+}
+
+export interface IngredientViewModel {
+  name: string;
+  amount: number;
+  unit: string;
+  isAllergen: boolean;
+}
+
+export interface StepViewModel {
+  description: string;
+  order: number;
+}
+
+export interface RecipeSummaryViewModel {
+  totalCalories: number;
+  ingredients: {
+    name: string;
+    amount: number;
+    unit: string;
+    isAllergen: boolean;
+  }[];
+} 
