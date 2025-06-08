@@ -6,19 +6,21 @@ import { ValidationService } from '../../lib/services/validation.service';
 import { ErrorLogService } from '../../lib/services/error-log.service';
 import { SupabaseService } from '../../lib/supabase/supabase.service';
 import { OpenRouterBackendService } from '../../lib/services/openrouter/openrouter-backend.service';
+import { AuthService } from '../../lib/services/auth.service';
 import { authMiddleware } from '../auth/auth.middleware';
 import { validateParseRecipeCommand } from './recipes.validator';
 
 const router = Router();
 
 // Apply authentication middleware to all recipe endpoints
-// router.use(authMiddleware);
+router.use(authMiddleware);
 
 // Initialize services
 const supabaseService = new SupabaseService();
 const errorLogService = new ErrorLogService(supabaseService);
 const openRouterService = new OpenRouterBackendService();
-const recipesService = new RecipesService(errorLogService, supabaseService, openRouterService);
+const authService = new AuthService(supabaseService);
+const recipesService = new RecipesService(errorLogService, supabaseService, openRouterService, authService);
 const validationService = new ValidationService();
 
 // Initialize controller and resolver
@@ -45,7 +47,7 @@ router.get('/', async (req, res) => {
 
 router.get('/:id', async (req, res) => {
   try {
-    const result = await controller.getRecipe(req.params.id);
+    const result = await controller.getRecipe(req, req.params.id);
     res.json(result);
   } catch (error) {
     if (error instanceof Error) {
@@ -64,7 +66,7 @@ router.get('/:id', async (req, res) => {
 
 router.post('/', async (req, res) => {
   try {
-    const result = await controller.createRecipe(req.body);
+    const result = await controller.createRecipe(req, req.body);
     res.status(201).json(result);
   } catch (error) {
     if (error instanceof Error) {
@@ -106,7 +108,7 @@ router.post('/parse', validateParseRecipeCommand, async (req, res) => {
 
 router.delete('/:id', async (req, res) => {
   try {
-    await controller.deleteRecipe(req.params.id);
+    await controller.deleteRecipe(req, req.params.id);
     res.status(204).send();
   } catch (error) {
     if (error instanceof Error) {
@@ -125,7 +127,7 @@ router.delete('/:id', async (req, res) => {
 
 router.put('/:id', async (req, res) => {
   try {
-    const result = await controller.updateRecipe(req.params.id, req.body);
+    const result = await controller.updateRecipe(req, req.params.id, req.body);
     res.json(result);
   } catch (error) {
     if (error instanceof Error) {

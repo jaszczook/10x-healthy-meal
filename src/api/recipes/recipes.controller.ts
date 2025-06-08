@@ -6,6 +6,7 @@ import { SupabaseService } from '../../lib/supabase/supabase.service';
 import { CreateRecipeCommandModel } from '../../types/dto';
 import { ValidationResultDto } from '../../types/dto';
 import { ParsedRecipeDto } from '../../types/dto';
+import { Request } from 'express';
 
 export class RecipesApiController {
   constructor(
@@ -16,6 +17,7 @@ export class RecipesApiController {
   ) {}
 
   async getRecipes(
+    req: Request,
     page?: string,
     perPage?: string,
     sortBy?: string,
@@ -23,8 +25,6 @@ export class RecipesApiController {
     search?: string
   ): Promise<RecipesListResponseDto> {
     try {
-      const userId = await this.supabaseService.getCurrentUserId();
-
       // Parse and validate query parameters
       const parsedPage = page ? parseInt(page, 10) : 1;
       const parsedPerPage = perPage ? parseInt(perPage, 10) : 10;
@@ -40,7 +40,7 @@ export class RecipesApiController {
 
       // Get recipes using the service
       return await this.recipesService.getRecipesList(
-        userId,
+        req,
         parsedPage,
         parsedPerPage,
         parsedSortBy,
@@ -59,15 +59,13 @@ export class RecipesApiController {
     }
   }
 
-  async getRecipe(recipeId: string): Promise<RecipeDetailDto> {
+  async getRecipe(req: Request, recipeId: string): Promise<RecipeDetailDto> {
     try {
-      const userId = await this.supabaseService.getCurrentUserId();
-
       // Validate recipe ID
       this.validationService.validateUuid(recipeId);
 
       // Get recipe using the service
-      return await this.recipesService.getRecipeById(userId, recipeId);
+      return await this.recipesService.getRecipeById(req, recipeId);
     } catch (error) {
       // Log error
       await this.errorLogService.logError('getRecipe', error);
@@ -85,15 +83,13 @@ export class RecipesApiController {
     }
   }
 
-  async createRecipe(recipeData: CreateRecipeCommandModel): Promise<RecipeDetailDto> {
+  async createRecipe(req: Request, recipeData: CreateRecipeCommandModel): Promise<RecipeDetailDto> {
     try {
-      const userId = await this.supabaseService.getCurrentUserId();
-
-      // Validate input data
+      // Validate recipe data
       this.validationService.validateCreateRecipeCommand(recipeData);
 
       // Create recipe using the service
-      return await this.recipesService.createRecipe(userId, recipeData);
+      return await this.recipesService.createRecipe(req, recipeData);
     } catch (error) {
       // Log error
       await this.errorLogService.logError('createRecipe', error);
@@ -104,22 +100,20 @@ export class RecipesApiController {
           throw new Error('401 Unauthorized');
         }
         if (error.message.startsWith('400')) {
-          throw error; // Keep the 400 error message as is
+          throw new Error(error.message);
         }
       }
       throw new Error('500 Internal Server Error');
     }
   }
 
-  async deleteRecipe(recipeId: string): Promise<void> {
+  async deleteRecipe(req: Request, recipeId: string): Promise<void> {
     try {
-      const userId = await this.supabaseService.getCurrentUserId();
-
-      // Validate recipe ID using the new validation method
-      this.validationService.validateDeleteRecipeParams(recipeId);
+      // Validate recipe ID
+      this.validationService.validateUuid(recipeId);
 
       // Delete recipe using the service
-      await this.recipesService.deleteRecipe(userId, recipeId);
+      await this.recipesService.deleteRecipe(req, recipeId);
     } catch (error) {
       // Log error
       await this.errorLogService.logError('deleteRecipe', error);
@@ -132,31 +126,23 @@ export class RecipesApiController {
         if (error.message === '404 Not Found') {
           throw new Error('404 Not Found');
         }
-        if (error.message.startsWith('400')) {
-          throw error; // Keep the 400 error message as is
-        }
-        // Handle specific database errors
-        if (error.message.includes('foreign key constraint')) {
-          throw new Error('400 Cannot delete recipe: it is referenced by other records');
-        }
-        if (error.message.includes('permission denied')) {
-          throw new Error('403 Forbidden: insufficient permissions');
-        }
       }
       throw new Error('500 Internal Server Error');
     }
   }
 
-  async updateRecipe(recipeId: string, recipeData: UpdateRecipeCommandModel): Promise<RecipeDetailDto> {
+  async updateRecipe(
+    req: Request,
+    recipeId: string,
+    recipeData: UpdateRecipeCommandModel
+  ): Promise<RecipeDetailDto> {
     try {
-      const userId = await this.supabaseService.getCurrentUserId();
-
-      // Validate recipe ID and input data
+      // Validate recipe ID and data
       this.validationService.validateUuid(recipeId);
       this.validationService.validateUpdateRecipeCommand(recipeData);
 
       // Update recipe using the service
-      return await this.recipesService.updateRecipe(userId, recipeId, recipeData);
+      return await this.recipesService.updateRecipe(req, recipeId, recipeData);
     } catch (error) {
       // Log error
       await this.errorLogService.logError('updateRecipe', error);
@@ -170,10 +156,7 @@ export class RecipesApiController {
           throw new Error('404 Not Found');
         }
         if (error.message.startsWith('400')) {
-          throw error; // Keep the 400 error message as is
-        }
-        if (error.message.includes('permission denied')) {
-          throw new Error('403 Forbidden: insufficient permissions');
+          throw new Error(error.message);
         }
       }
       throw new Error('500 Internal Server Error');

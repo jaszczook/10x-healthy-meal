@@ -5,22 +5,30 @@ import { SupabaseService } from '../supabase/supabase.service';
 import { CreateRecipeCommandModel, UpdateRecipeCommandModel } from '../../types/dto';
 import { OpenRouterBackendService } from './openrouter/openrouter-backend.service';
 import { ChatMessage } from '../../types/openrouter';
+import { AuthService } from './auth.service';
+import { Request } from 'express';
 
 export class RecipesService {
   constructor(
     private errorLogService: ErrorLogService,
     private supabaseService: SupabaseService,
-    private openRouterService: OpenRouterBackendService
+    private openRouterService: OpenRouterBackendService,
+    private authService: AuthService
   ) {}
 
   async getRecipesList(
-    userId: string,
+    req: Request,
     page: number = 1,
     perPage: number = 10,
     sortBy: 'title' | 'created_at' | 'updated_at' = 'created_at',
     sortDirection: 'asc' | 'desc' = 'desc',
     search?: string
   ): Promise<RecipesListResponseDto> {
+    const { user } = await this.authService.getSession(req);
+    if (!user) {
+      throw new Error('Unauthorized');
+    }
+
     try {
       // Calculate pagination
       const offset = (page - 1) * perPage;
@@ -29,7 +37,7 @@ export class RecipesService {
       let query = this.supabaseService.client
         .from('recipes')
         .select('*', { count: 'exact' })
-        .eq('user_id', userId);
+        .eq('user_id', user.id);
 
       // Add search if provided
       if (search) {
@@ -64,19 +72,24 @@ export class RecipesService {
       };
     } catch (error) {
       // Log error
-      await this.errorLogService.logError(userId, error);
+      await this.errorLogService.logError(user.id, error);
       throw error;
     }
   }
 
-  async getRecipeById(userId: string, recipeId: string): Promise<RecipeDetailDto> {
+  async getRecipeById(req: Request, recipeId: string): Promise<RecipeDetailDto> {
+    const { user } = await this.authService.getSession(req);
+    if (!user) {
+      throw new Error('Unauthorized');
+    }
+
     try {
       // Build query
       const { data, error } = await this.supabaseService.client
         .from('recipes')
         .select('*')
         .eq('id', recipeId)
-        .eq('user_id', userId)
+        .eq('user_id', user.id)
         .single();
 
       if (error) {
@@ -94,16 +107,21 @@ export class RecipesService {
       return this.mapToRecipeDetailDto(data);
     } catch (error) {
       // Log error
-      await this.errorLogService.logError(userId, error);
+      await this.errorLogService.logError(user.id, error);
       throw error;
     }
   }
 
-  async createRecipe(userId: string, recipeData: CreateRecipeCommandModel): Promise<RecipeDetailDto> {
+  async createRecipe(req: Request, recipeData: CreateRecipeCommandModel): Promise<RecipeDetailDto> {
+    const { user } = await this.authService.getSession(req);
+    if (!user) {
+      throw new Error('Unauthorized');
+    }
+
     try {
       const now = new Date().toISOString();
       const recipeEntity = {
-        user_id: userId,
+        user_id: user.id,
         title: recipeData.title,
         recipe_data: recipeData.recipe_data,
         created_at: now,
@@ -129,19 +147,24 @@ export class RecipesService {
       return this.mapToRecipeDetailDto(data);
     } catch (error) {
       // Log error
-      await this.errorLogService.logError(userId, error);
+      await this.errorLogService.logError(user.id, error);
       throw error;
     }
   }
 
-  async deleteRecipe(userId: string, recipeId: string): Promise<void> {
+  async deleteRecipe(req: Request, recipeId: string): Promise<void> {
+    const { user } = await this.authService.getSession(req);
+    if (!user) {
+      throw new Error('Unauthorized');
+    }
+
     try {
       // First verify that the recipe exists and belongs to the user
       const { data, error: fetchError } = await this.supabaseService.client
         .from('recipes')
         .select('id')
         .eq('id', recipeId)
-        .eq('user_id', userId)
+        .eq('user_id', user.id)
         .single();
 
       if (fetchError) {
@@ -160,37 +183,42 @@ export class RecipesService {
         .from('recipes')
         .delete()
         .eq('id', recipeId)
-        .eq('user_id', userId);
+        .eq('user_id', user.id);
 
       if (deleteError) {
         throw deleteError;
       }
 
       // Log successful deletion
-      await this.errorLogService.logError(userId, {
+      await this.errorLogService.logError(user.id, {
         message: `Recipe ${recipeId} successfully deleted`,
         type: 'INFO',
         timestamp: new Date().toISOString()
       });
     } catch (error) {
       // Log error
-      await this.errorLogService.logError(userId, error);
+      await this.errorLogService.logError(user.id, error);
       throw error;
     }
   }
 
   async updateRecipe(
-    userId: string,
+    req: Request,
     recipeId: string,
     recipeData: UpdateRecipeCommandModel
   ): Promise<RecipeDetailDto> {
+    const { user } = await this.authService.getSession(req);
+    if (!user) {
+      throw new Error('Unauthorized');
+    }
+
     try {
       // First verify that the recipe exists and belongs to the user
       const { data: existingRecipe, error: fetchError } = await this.supabaseService.client
         .from('recipes')
         .select('*')
         .eq('id', recipeId)
-        .eq('user_id', userId)
+        .eq('user_id', user.id)
         .single();
 
       if (fetchError) {
@@ -216,7 +244,7 @@ export class RecipesService {
         .from('recipes')
         .update(updateData)
         .eq('id', recipeId)
-        .eq('user_id', userId)
+        .eq('user_id', user.id)
         .select()
         .single();
 
@@ -232,7 +260,7 @@ export class RecipesService {
       return this.mapToRecipeDetailDto(data);
     } catch (error) {
       // Log error
-      await this.errorLogService.logError(userId, error);
+      await this.errorLogService.logError(user.id, error);
       throw error;
     }
   }
