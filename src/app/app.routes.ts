@@ -16,7 +16,7 @@ export const routes: Routes = [
   {
     path: 'dashboard',
     loadComponent: () => import('./features/dashboard/dashboard-page/dashboard-page.component').then(m => m.DashboardPageComponent),
-    // TODO: Add AuthGuard
+    canActivate: [authGuard]
   },
   {
     path: 'preferences',
@@ -25,8 +25,7 @@ export const routes: Routes = [
   },
   {
     path: 'recipes',
-    // TODO: Add auth guard when authentication is implemented
-    // canActivate: [authGuard],
+    canActivate: [authGuard],
     children: [
       {
         path: 'new',
