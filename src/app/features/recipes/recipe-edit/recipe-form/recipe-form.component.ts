@@ -33,6 +33,7 @@ export class RecipeFormComponent {
   private _userPreferences = signal<UserPreferencesDto | null>(null);
 
   @Input() set formData(value: RecipeFormViewModel) {
+    this.isUpdating = true;
     this.form.patchValue(value);
     this.ingredients.set(value.ingredients);
     if (value.steps && value.steps.length > 0) {
@@ -41,6 +42,7 @@ export class RecipeFormComponent {
         order: step.order || index + 1
       })));
     }
+    this.isUpdating = false;
   }
 
   @Input() set userPreferences(value: UserPreferencesDto) {
@@ -58,6 +60,16 @@ export class RecipeFormComponent {
 
   ingredients = signal<RecipeFormViewModel['ingredients']>([]);
   steps = signal<StepDto[]>([]);
+  private isUpdating = false;
+
+  constructor() {
+    // Subscribe to form value changes
+    this.form.valueChanges.subscribe(() => {
+      if (!this.isUpdating) {
+        this.emitFormData();
+      }
+    });
+  }
 
   get userPreferences(): UserPreferencesDto | null {
     return this._userPreferences();
