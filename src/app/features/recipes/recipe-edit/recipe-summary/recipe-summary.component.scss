@@ -1,17 +1,20 @@
 .summary-card {
-  margin-bottom: 24px;
+  margin: 1rem;
+  max-width: 800px;
 }
 
 .summary-list {
-  margin-bottom: 16px;
+  margin-bottom: 1rem;
 }
 
 .calorie-item {
-  border-bottom: 1px solid #e0e0e0;
-  margin-bottom: 8px;
+  display: flex;
+  align-items: center;
+  padding: 1rem 0;
 }
 
 .calorie-icon {
+  margin-right: 1rem;
   &.on-target {
     color: #4caf50;
   }
@@ -19,17 +22,13 @@
     color: #2196f3;
   }
   &.over {
-    color: #ff9800;
-  }
-  &.no-target {
-    color: #757575;
+    color: #f44336;
   }
 }
 
 .calorie-text {
-  font-size: 16px;
+  font-size: 1.1rem;
   font-weight: 500;
-  
   &.on-target {
     color: #4caf50;
   }
@@ -37,173 +36,150 @@
     color: #2196f3;
   }
   &.over {
-    color: #ff9800;
-  }
-  
-  .target-info {
-    font-size: 14px;
-    font-weight: 400;
-    color: rgba(0, 0, 0, 0.6);
-    margin-left: 8px;
+    color: #f44336;
   }
 }
 
+.target-info {
+  font-size: 0.9rem;
+  color: #666;
+  margin-left: 0.5rem;
+}
+
+.calorie-edit {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+}
+
+.calorie-input {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+
+  mat-form-field {
+    width: 120px;
+  }
+}
+
+.calorie-actions {
+  display: flex;
+  gap: 0.25rem;
+}
+
 .allergens-section {
-  margin: 24px 0;
-  
+  margin: 1rem 0;
+  padding: 1rem;
+  background-color: #f5f5f5;
+  border-radius: 4px;
+
   h4 {
-    margin: 0 0 12px 0;
-    color: rgba(0, 0, 0, 0.87);
-    font-size: 16px;
-    font-weight: 500;
+    margin: 0 0 0.5rem 0;
+    color: #333;
   }
 }
 
 .allergen-chips {
   display: flex;
   flex-wrap: wrap;
-  gap: 8px;
+  gap: 0.5rem;
 }
 
 .allergen-chip {
   display: inline-flex;
   align-items: center;
-  gap: 4px;
-  padding: 6px 12px;
-  background-color: #f5f5f5;
+  padding: 0.25rem 0.75rem;
+  background-color: #e0e0e0;
   border-radius: 16px;
-  font-size: 14px;
-  color: rgba(0, 0, 0, 0.87);
-  border: 1px solid #e0e0e0;
-  
+  font-size: 0.9rem;
+  color: #333;
+
   &.user-allergen {
     background-color: #ffebee;
-    border-color: #f44336;
-    color: #d32f2f;
-    
-    mat-icon {
-      color: #f44336;
-    }
+    color: #c62828;
   }
-  
+
   &.user-intolerance {
     background-color: #fff3e0;
-    border-color: #ff9800;
-    color: #f57c00;
-    
-    mat-icon {
-      color: #ff9800;
-    }
+    color: #ef6c00;
   }
-  
+
   mat-icon {
-    font-size: 16px;
-    width: 16px;
-    height: 16px;
+    font-size: 1rem;
+    height: 1rem;
+    width: 1rem;
+    margin-right: 0.25rem;
   }
 }
 
 .warnings-section {
-  margin: 24px 0;
-  
+  margin: 1rem 0;
+  padding: 1rem;
+  background-color: #fff3e0;
+  border-radius: 4px;
+
   h4 {
-    margin: 0 0 12px 0;
-    color: rgba(0, 0, 0, 0.87);
-    font-size: 16px;
-    font-weight: 500;
+    margin: 0 0 0.5rem 0;
+    color: #ef6c00;
   }
 }
 
 .ingredient-warning {
-  margin-bottom: 8px;
-}
-
-.warning-item {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  padding: 8px 12px;
+  margin: 0.5rem 0;
+  padding: 0.5rem;
+  background-color: #fff;
   border-radius: 4px;
-  font-size: 14px;
-  
-  &.allergen-warning {
-    background-color: #ffebee;
-    color: #d32f2f;
-    border-left: 4px solid #f44336;
-    
-    mat-icon {
-      color: #f44336;
+
+  .warning-item {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    color: #666;
+
+    &.allergen-warning {
+      color: #c62828;
     }
-  }
-  
-  &.intolerance-warning {
-    background-color: #e3f2fd;
-    color: #1976d2;
-    border-left: 4px solid #2196f3;
-    
-    mat-icon {
-      color: #2196f3;
+
+    &.intolerance-warning {
+      color: #ef6c00;
     }
-  }
-  
-  mat-icon {
-    font-size: 18px;
-    width: 18px;
-    height: 18px;
+
+    mat-icon {
+      font-size: 1.2rem;
+      height: 1.2rem;
+      width: 1.2rem;
+    }
   }
 }
 
 .calorie-status-info {
-  margin-top: 24px;
-}
+  margin-top: 1rem;
+  padding: 1rem;
+  background-color: #f5f5f5;
+  border-radius: 4px;
 
-.status-message {
-  padding: 12px;
-  border-radius: 8px;
-  
-  .success-message {
+  .status-message {
     display: flex;
     align-items: center;
-    gap: 8px;
-    background-color: #e8f5e8;
-    color: #2e7d2e;
-    
-    mat-icon {
+    gap: 0.5rem;
+    font-size: 0.9rem;
+
+    .success-message {
       color: #4caf50;
     }
-  }
-  
-  .info-message {
-    display: flex;
-    align-items: center;
-    gap: 8px;
-    background-color: #e3f2fd;
-    color: #1976d2;
-    
-    mat-icon {
+
+    .info-message {
       color: #2196f3;
     }
-  }
-  
-  .warning-message {
-    display: flex;
-    align-items: center;
-    gap: 8px;
-    background-color: #fff3e0;
-    color: #f57c00;
-    
-    mat-icon {
-      color: #ff9800;
+
+    .warning-message {
+      color: #f44336;
     }
-  }
-  
-  mat-icon {
-    font-size: 20px;
-    width: 20px;
-    height: 20px;
-  }
-  
-  span {
-    font-weight: 500;
+
+    mat-icon {
+      font-size: 1.2rem;
+      height: 1.2rem;
+      width: 1.2rem;
+    }
   }
 } 

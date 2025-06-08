@@ -1,24 +1,30 @@
 <div class="recipe-edit-container">
-  <mat-stepper [linear]="true">
+  <mat-stepper [linear]="true" #stepper>
     <mat-step>
-      <ng-template matStepLabel>Edit Recipe</ng-template>
+      <ng-template matStepLabel>Recipe Details</ng-template>
       <app-recipe-form
         [formData]="formData()"
         [userPreferences]="userPreferences()"
         (formDataChange)="onFormDataChange($event)"
       ></app-recipe-form>
     </mat-step>
+
     <mat-step>
       <ng-template matStepLabel>Summary</ng-template>
       <app-recipe-summary
         [summary]="summary()"
         [userPreferences]="userPreferences()"
+        [recipeId]="recipeId()!"
+        [recipeData]="getRecipeData()"
+        (caloriesUpdated)="onCaloriesUpdated($event)"
       ></app-recipe-summary>
     </mat-step>
   </mat-stepper>
 
   <div class="actions">
     <button mat-button (click)="onCancel()">Cancel</button>
-    <button mat-raised-button color="primary" (click)="onSave()">Save</button>
+    <button mat-raised-button color="primary" (click)="onSave()" [disabled]="isLoading()">
+      Save Recipe
+    </button>
   </div>
 </div> 

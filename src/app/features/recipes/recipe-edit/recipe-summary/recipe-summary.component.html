@@ -11,12 +11,31 @@
           local_fire_department
         </mat-icon>
         <span matListItemTitle>Calories</span>
-        <span matListItemLine class="calorie-text" [class]="caloriesStatus">
-          {{ summary.totalCalories }} kcal
-          <span *ngIf="userPreferences?.target_calories" class="target-info">
-            (target: {{ userPreferences?.target_calories }} kcal)
+        <div matListItemLine class="calorie-edit">
+          <span class="calorie-text" [class]="caloriesStatus">
+            {{ summary.totalCalories }} kcal
+            <span *ngIf="userPreferences?.target_calories" class="target-info">
+              (target: {{ userPreferences?.target_calories }} kcal)
+            </span>
           </span>
-        </span>
+          <button mat-icon-button (click)="startEditing()" *ngIf="!isEditing">
+            <mat-icon>edit</mat-icon>
+          </button>
+          <div class="calorie-input" *ngIf="isEditing">
+            <mat-form-field>
+              <input matInput type="number" [(ngModel)]="editedCalories" min="0">
+              <span matSuffix>kcal</span>
+            </mat-form-field>
+            <div class="calorie-actions">
+              <button mat-icon-button color="primary" (click)="saveCalories()">
+                <mat-icon>check</mat-icon>
+              </button>
+              <button mat-icon-button (click)="cancelEditing()">
+                <mat-icon>close</mat-icon>
+              </button>
+            </div>
+          </div>
+        </div>
       </mat-list-item>
 
       <!-- Ingredients Count -->

@@ -4,7 +4,7 @@ import { MatStepperModule } from '@angular/material/stepper';
 import { MatButtonModule } from '@angular/material/button';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { ActivatedRoute, Router } from '@angular/router';
-import { RecipeDetailDto, RecipeFormViewModel, ValidationResultDto, UserPreferencesDto, RecipeSummaryViewModel, IngredientViewModel, StepViewModel } from '../../../../types/dto';
+import { RecipeDetailDto, RecipeFormViewModel, ValidationResultDto, UserPreferencesDto, RecipeSummaryViewModel, IngredientViewModel, StepViewModel, RecipeDataDto } from '../../../../types/dto';
 import { RecipeFormComponent } from './recipe-form/recipe-form.component';
 import { RecipeSummaryComponent } from './recipe-summary/recipe-summary.component';
 import { RecipeService } from '../services/recipe.service';
@@ -102,11 +102,34 @@ export class RecipeEditViewComponent implements OnInit {
     this.updateSummary();
   }
 
+  onCaloriesUpdated(calories: number): void {
+    this.formData.update(data => ({
+      ...data,
+      calories
+    }));
+    this.updateSummary();
+  }
+
   private updateSummary(): void {
+    const data = this.formData();
     this.summary.set({
-      totalCalories: this.formData().calories || 0,
-      ingredients: this.formData().ingredients
+      totalCalories: data.calories || 0,
+      ingredients: data.ingredients
     });
+  }
+
+  getRecipeData(): RecipeDataDto {
+    const data = this.formData();
+    return {
+      ingredients: data.ingredients.map(({ isAllergen, ...ing }) => ing),
+      steps: data.steps.map(({ order, ...step }) => step),
+      notes: data.notes,
+      calories: data.calories
+    };
+  }
+
+  onCancel(): void {
+    this.router.navigate(['/recipes']);
   }
 
   onSave(): void {
@@ -118,28 +141,23 @@ export class RecipeEditViewComponent implements OnInit {
     // Convert ViewModel back to DTO format
     const recipeData = {
       title: formData.title,
-      recipe_data: {
-        ingredients: formData.ingredients.map(({ isAllergen, ...ing }) => ing), // Remove isAllergen field
-        steps: formData.steps.map(({ order, ...step }) => step), // Remove order field
-        notes: formData.notes,
-        calories: formData.calories
-      }
+      recipe_data: this.getRecipeData()
     };
+
+    console.log('Sending update with data:', recipeData); // Debug log
 
     // Update the recipe directly
     this.recipeService.updateRecipe(this.recipeId()!, recipeData).subscribe({
-      next: () => {
+      next: (response) => {
+        console.log('Update response:', response); // Debug log
         this.snackBar.open('Recipe updated successfully', 'Close', { duration: 3000 });
         this.router.navigate(['/recipes', this.recipeId()]);
       },
       error: (error) => {
+        console.error('Update error:', error); // Debug log
         this.snackBar.open('Failed to update recipe', 'Close', { duration: 3000 });
         this.isLoading.set(false);
       }
     });
-  }
-
-  onCancel(): void {
-    this.router.navigate(['/recipes', this.recipeId()]);
   }
 } 
