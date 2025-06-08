@@ -23,6 +23,7 @@ export class PreferencesPageComponent implements OnInit, OnDestroy {
   private snackBar = inject(MatSnackBar);
   private preferencesService = inject(PreferencesService);
   private destroy$ = new Subject<void>();
+  private isSubmitting = false;
 
   preferences = signal<UserPreferencesDto | null>(null);
   isLoading = signal(false);
@@ -54,19 +55,30 @@ export class PreferencesPageComponent implements OnInit, OnDestroy {
   }
 
   onSubmit(data: UserPreferencesCommandModel): void {
+    if (this.isSubmitting) {
+      console.log('Already submitting, ignoring duplicate submission');
+      return;
+    }
+
+    console.log('Starting preferences submission');
+    this.isSubmitting = true;
     this.isLoading.set(true);
+
     this.preferencesService.updateCurrentUserPreferences(data)
       .pipe(takeUntil(this.destroy$))
       .subscribe({
         next: (response) => {
+          console.log('Preferences submission completed');
           this.preferences.set(response);
           this.showSuccess('Preferences saved successfully');
           this.isLoading.set(false);
+          this.isSubmitting = false;
         },
         error: (error) => {
           console.error('Error saving preferences:', error);
           this.showError('Failed to save preferences');
           this.isLoading.set(false);
+          this.isSubmitting = false;
         }
       });
   }

@@ -3,14 +3,14 @@
     label="Allergies"
     [options]="allergyOptions"
     [value]="form.get('allergies')?.value || []"
-    (onChange)="onAllergiesChange($event)"
+    (onChange)="onSelectionChange('allergies', $event)"
   ></app-multi-select>
 
   <app-multi-select
     label="Intolerances"
     [options]="intoleranceOptions"
     [value]="form.get('intolerances')?.value || []"
-    (onChange)="onIntolerancesChange($event)"
+    (onChange)="onSelectionChange('intolerances', $event)"
   ></app-multi-select>
 
   <mat-form-field>

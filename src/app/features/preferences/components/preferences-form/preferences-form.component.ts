@@ -8,6 +8,11 @@ import { MatProgressBarModule } from '@angular/material/progress-bar';
 import { MultiSelectComponent } from '../multi-select/multi-select.component';
 import { UserPreferencesDto, UserPreferencesCommandModel } from '../../../../../types/dto';
 
+interface Option {
+  key: string;
+  label: string;
+}
+
 @Component({
   selector: 'app-preferences-form',
   standalone: true,
@@ -26,18 +31,10 @@ import { UserPreferencesDto, UserPreferencesCommandModel } from '../../../../../
 export class PreferencesFormComponent {
   @Input() set initialData(value: UserPreferencesDto | null) {
     if (value) {
-      // Convert backend values to proper case using the options mapping
-      const normalizedAllergies = (value.allergies || []).map(a => 
-        this.allergyOptions.find(opt => opt.key === a.toLowerCase())?.key || a.toLowerCase()
-      );
-      const normalizedIntolerances = (value.intolerances || []).map(i => 
-        this.intoleranceOptions.find(opt => opt.key === i.toLowerCase())?.key || i.toLowerCase()
-      );
-
       this.form.patchValue({
         target_calories: value.target_calories,
-        allergies: normalizedAllergies,
-        intolerances: normalizedIntolerances
+        allergies: this.normalizeValues(value.allergies || [], this.allergyOptions),
+        intolerances: this.normalizeValues(value.intolerances || [], this.intoleranceOptions)
       }, { emitEvent: true });
     }
   }
@@ -74,24 +71,24 @@ export class PreferencesFormComponent {
   ];
 
   onSubmit(): void {
+    console.log('Form submission triggered');
     if (this.form.valid) {
+      console.log('Form is valid, emitting submit event');
       this.submit.emit(this.form.value as UserPreferencesCommandModel);
+    } else {
+      console.log('Form is invalid, not emitting submit event');
     }
   }
 
-  onAllergiesChange(allergies: string[]): void {
-    // Convert display values back to keys for storage
-    const normalizedAllergies = allergies.map(a => 
-      this.allergyOptions.find(opt => opt.label === a)?.key || a.toLowerCase()
-    );
-    this.form.patchValue({ allergies: normalizedAllergies });
+  onSelectionChange(field: 'allergies' | 'intolerances', values: string[]): void {
+    const options = field === 'allergies' ? this.allergyOptions : this.intoleranceOptions;
+    const normalizedValues = this.normalizeValues(values, options);
+    this.form.patchValue({ [field]: normalizedValues }, { emitEvent: false });
   }
 
-  onIntolerancesChange(intolerances: string[]): void {
-    // Convert display values back to keys for storage
-    const normalizedIntolerances = intolerances.map(i => 
-      this.intoleranceOptions.find(opt => opt.label === i)?.key || i.toLowerCase()
+  private normalizeValues(values: string[], options: Option[]): string[] {
+    return values.map(v => 
+      options.find(opt => opt.label === v)?.key || v.toLowerCase()
     );
-    this.form.patchValue({ intolerances: normalizedIntolerances });
   }
 } 
