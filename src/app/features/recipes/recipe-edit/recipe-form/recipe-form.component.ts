@@ -31,19 +31,19 @@ export class RecipeFormComponent implements OnInit, OnDestroy {
   private fb = inject(FormBuilder);
   private recipeService = inject(RecipeService);
   private _userPreferences = signal<UserPreferencesDto | null>(null);
-  private formSubscription?: Subscription;
+  private _formData: RecipeFormViewModel | null = null;
   private isUpdatingFromParent = false;
+  private formSubscription: Subscription | null = null;
 
   @Input() set formData(value: RecipeFormViewModel) {
+    this._formData = value;
     this.isUpdatingFromParent = true;
-    this.form.patchValue(value);
+    this.form.patchValue({
+      title: value.title,
+      notes: value.notes
+    });
     this.ingredients.set(value.ingredients);
-    if (value.steps && value.steps.length > 0) {
-      this.steps.set(value.steps.map((step, index) => ({
-        description: step.description,
-        order: step.order || index + 1
-      })));
-    }
+    this.steps.set(value.steps);
     this.isUpdatingFromParent = false;
   }
 
@@ -96,7 +96,8 @@ export class RecipeFormComponent implements OnInit, OnDestroy {
       steps: this.steps().map((step, index) => ({
         description: step.description,
         order: index + 1
-      }))
+      })),
+      calories: this._formData?.calories || 0
     } as RecipeFormViewModel;
   }
 

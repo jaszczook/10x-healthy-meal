@@ -1,6 +1,6 @@
-import { Component, inject, signal, OnInit } from '@angular/core';
+import { Component, inject, signal, OnInit, ViewChild } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { MatStepperModule } from '@angular/material/stepper';
+import { MatStepperModule, MatStepper } from '@angular/material/stepper';
 import { MatButtonModule } from '@angular/material/button';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { ActivatedRoute, Router } from '@angular/router';
@@ -24,6 +24,8 @@ import { PreferencesService } from '../../preferences/services/preferences.servi
   styleUrl: './recipe-edit-view.component.scss'
 })
 export class RecipeEditViewComponent implements OnInit {
+  @ViewChild('stepper') stepper!: MatStepper;
+  
   private route = inject(ActivatedRoute);
   private router = inject(Router);
   private snackBar = inject(MatSnackBar);
@@ -160,7 +162,10 @@ export class RecipeEditViewComponent implements OnInit {
     // Convert ViewModel back to DTO format
     const recipeData = {
       title: formData.title,
-      recipe_data: this.getRecipeData()
+      recipe_data: {
+        ...this.getRecipeData(),
+        calories: formData.calories
+      }
     };
 
     // Update the recipe directly
