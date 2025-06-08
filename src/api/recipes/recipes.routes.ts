@@ -85,9 +85,7 @@ router.post('/', async (req, res) => {
 
 router.post('/parse', validateParseRecipeCommand, async (req, res) => {
   try {
-    const result = await controller.parseRecipe(req.body.recipe_text);
-    console.log('chuj');
-    console.log(result);
+    const result = await controller.parseRecipe(req, req.body.recipe_text);
     res.json(result);
   } catch (error) {
     if (error instanceof Error) {

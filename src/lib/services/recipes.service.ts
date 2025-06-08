@@ -265,7 +265,12 @@ export class RecipesService {
     }
   }
 
-  async parseRecipe(recipeText: string): Promise<ParsedRecipeDto> {
+  async parseRecipe(req: Request, recipeText: string): Promise<RecipeDetailDto> {
+    const { user } = await this.authService.getSession(req);
+    if (!user) {
+      throw new Error('Unauthorized');
+    }
+
     try {
       const messages: ChatMessage[] = [
         {
@@ -321,10 +326,16 @@ export class RecipesService {
       const parsedContent = response.reply;
       this.validateParsedRecipe(parsedContent);
 
-      return parsedContent;
+      // Create new recipe with parsed data
+      const createRecipeCommand: CreateRecipeCommandModel = {
+        title: parsedContent.title,
+        recipe_data: parsedContent.recipe_data
+      };
+
+      return await this.createRecipe(req, createRecipeCommand);
     } catch (error) {
       // Log the error
-      await this.errorLogService.logError('parseRecipe', {
+      await this.errorLogService.logError(user.id, {
         message: error instanceof Error ? error.message : 'Unknown error during AI processing',
         type: 'AI_ERROR',
         details: {

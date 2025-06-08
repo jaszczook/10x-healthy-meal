@@ -1,0 +1,10 @@
+<mat-list>
+  @for (step of steps; track step.description; let i = $index) {
+    <mat-list-item>
+      <mat-icon matListItemIcon>format_list_numbered</mat-icon>
+      <span matListItemTitle>
+        <strong>Step {{ i + 1 }}:</strong> {{ step.description }}
+      </span>
+    </mat-list-item>
+  }
+</mat-list> 

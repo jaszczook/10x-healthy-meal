@@ -243,7 +243,7 @@ export class RecipesApiController {
     }
   }
 
-  async parseRecipe(recipeText: string): Promise<ParsedRecipeDto> {
+  async parseRecipe(req: Request, recipeText: string): Promise<RecipeDetailDto> {
     try {
       // Verify user is authenticated
       await this.supabaseService.getCurrentUserId();
@@ -254,7 +254,7 @@ export class RecipesApiController {
       }
 
       // Parse recipe using the service
-      return await this.recipesService.parseRecipe(recipeText);
+      return await this.recipesService.parseRecipe(req, recipeText);
     } catch (error) {
       // Log error with enhanced context
       await this.errorLogService.logError('parseRecipe', {

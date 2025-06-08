@@ -1,0 +1,10 @@
+<mat-list>
+  @for (ingredient of ingredients; track ingredient.name) {
+    <mat-list-item>
+      <mat-icon matListItemIcon>restaurant</mat-icon>
+      <span matListItemTitle>
+        {{ ingredient.amount }} {{ ingredient.unit }} {{ ingredient.name }}
+      </span>
+    </mat-list-item>
+  }
+</mat-list> 

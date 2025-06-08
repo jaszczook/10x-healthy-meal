@@ -1,0 +1,19 @@
+<mat-tab-group>
+  <mat-tab label="Ingredients">
+    <app-ingredients-list 
+      [ingredients]="recipe.recipe_data.ingredients">
+    </app-ingredients-list>
+  </mat-tab>
+
+  <mat-tab label="Steps">
+    <app-steps-list 
+      [steps]="recipe.recipe_data.steps">
+    </app-steps-list>
+  </mat-tab>
+
+  <mat-tab label="Notes" *ngIf="recipe.recipe_data.notes">
+    <app-notes 
+      [notes]="recipe.recipe_data.notes">
+    </app-notes>
+  </mat-tab>
+</mat-tab-group> 

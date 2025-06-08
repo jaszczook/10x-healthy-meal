@@ -31,6 +31,11 @@ export const routes: Routes = [
         path: 'new',
         loadComponent: () => import('./features/recipes/recipe-new/recipe-new.component')
           .then(m => m.RecipeNewComponent)
+      },
+      {
+        path: ':id',
+        loadComponent: () => import('./features/recipes/recipe-details/recipe-details.component')
+          .then(m => m.RecipeDetailsComponent)
       }
     ]
   },
