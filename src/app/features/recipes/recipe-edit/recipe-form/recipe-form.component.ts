@@ -5,9 +5,11 @@ import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
 import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
-import { RecipeFormViewModel, StepDto, UserPreferencesDto } from '../../../../../types/dto';
+import { RecipeFormViewModel, StepDto, UserPreferencesDto, RecipeDetailDto, CreateRecipeCommandModel } from '../../../../../types/dto';
 import { IngredientsListComponent } from './ingredients-list/ingredients-list.component';
 import { StepsListComponent } from './steps-list/steps-list.component';
+import { RecipeService } from '../../services/recipe.service';
+import { firstValueFrom } from 'rxjs';
 
 @Component({
   selector: 'app-recipe-form',
@@ -27,6 +29,7 @@ import { StepsListComponent } from './steps-list/steps-list.component';
 })
 export class RecipeFormComponent {
   private fb = inject(FormBuilder);
+  private recipeService = inject(RecipeService);
   private _userPreferences = signal<UserPreferencesDto | null>(null);
 
   @Input() set formData(value: RecipeFormViewModel) {
@@ -45,6 +48,8 @@ export class RecipeFormComponent {
   }
 
   @Output() formDataChange = new EventEmitter<RecipeFormViewModel>();
+  @Output() saveSuccess = new EventEmitter<RecipeDetailDto>();
+  @Output() saveError = new EventEmitter<string>();
 
   form = this.fb.group({
     title: ['', [Validators.required, Validators.minLength(3)]],
@@ -68,14 +73,29 @@ export class RecipeFormComponent {
     this.emitFormData();
   }
 
-  onSubmit(): void {
+  async onSubmit(): Promise<void> {
     if (this.form.valid) {
-      this.emitFormData();
+      try {
+        const formData = this.getFormData();
+        const recipeCommand: CreateRecipeCommandModel = {
+          title: formData.title,
+          recipe_data: {
+            ingredients: formData.ingredients,
+            steps: formData.steps.map(step => ({ description: step.description })),
+            notes: formData.notes,
+            calories: formData.calories
+          }
+        };
+        const recipe = await firstValueFrom(this.recipeService.createRecipe(recipeCommand));
+        this.saveSuccess.emit(recipe);
+      } catch (error) {
+        this.saveError.emit(error instanceof Error ? error.message : 'Failed to save recipe');
+      }
     }
   }
 
-  private emitFormData(): void {
-    const formData: RecipeFormViewModel = {
+  private getFormData(): RecipeFormViewModel {
+    return {
       ...this.form.value,
       ingredients: this.ingredients(),
       steps: this.steps().map((step, index) => ({
@@ -83,7 +103,9 @@ export class RecipeFormComponent {
         order: index + 1
       }))
     } as RecipeFormViewModel;
-    
-    this.formDataChange.emit(formData);
+  }
+
+  private emitFormData(): void {
+    this.formDataChange.emit(this.getFormData());
   }
 } 

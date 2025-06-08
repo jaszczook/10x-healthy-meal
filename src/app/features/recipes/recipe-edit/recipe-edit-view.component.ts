@@ -126,29 +126,14 @@ export class RecipeEditViewComponent implements OnInit {
       }
     };
 
-    // First validate the recipe
-    this.recipeService.validateRecipe(this.recipeId()!, recipeData).subscribe({
-      next: (validationResult) => {
-        if (!validationResult.valid) {
-          this.snackBar.open('Recipe validation failed', 'Close', { duration: 5000 });
-          this.isLoading.set(false);
-          return;
-        }
-
-        // If validation passes, update the recipe
-        this.recipeService.updateRecipe(this.recipeId()!, recipeData).subscribe({
-          next: () => {
-            this.snackBar.open('Recipe updated successfully', 'Close', { duration: 3000 });
-            this.router.navigate(['/recipes', this.recipeId()]);
-          },
-          error: (error) => {
-            this.snackBar.open('Failed to update recipe', 'Close', { duration: 3000 });
-            this.isLoading.set(false);
-          }
-        });
+    // Update the recipe directly
+    this.recipeService.updateRecipe(this.recipeId()!, recipeData).subscribe({
+      next: () => {
+        this.snackBar.open('Recipe updated successfully', 'Close', { duration: 3000 });
+        this.router.navigate(['/recipes', this.recipeId()]);
       },
       error: (error) => {
-        this.snackBar.open('Failed to validate recipe', 'Close', { duration: 3000 });
+        this.snackBar.open('Failed to update recipe', 'Close', { duration: 3000 });
         this.isLoading.set(false);
       }
     });
