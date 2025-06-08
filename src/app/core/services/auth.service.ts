@@ -1,15 +1,10 @@
-import { Injectable, inject } from '@angular/core';
+import { inject, Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
-import { Router } from '@angular/router';
 import { BehaviorSubject, Observable, tap } from 'rxjs';
+import { Router } from '@angular/router';
 
-export interface User {
-  id: string;
-  email: string;
-}
-
-export interface AuthState {
-  user: User | null;
+interface AuthState {
+  user: any | null;
 }
 
 @Injectable({
@@ -52,9 +47,5 @@ export class AuthService {
 
   isAuthenticated(): boolean {
     return this.authStateSubject.value !== null;
-  }
-
-  getCurrentUser(): User | null {
-    return this.authStateSubject.value?.user || null;
   }
 } 

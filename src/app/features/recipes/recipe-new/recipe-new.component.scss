@@ -1,0 +1,13 @@
+.recipe-new-container {
+  max-width: 800px;
+  margin: 2rem auto;
+  padding: 0 1rem;
+
+  mat-card {
+    margin-bottom: 1rem;
+  }
+
+  mat-progress-bar {
+    margin: 1rem 0;
+  }
+} 
