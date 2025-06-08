@@ -6,7 +6,7 @@ export class OpenRouterBackendService {
   private readonly baseUrl: string;
   private readonly timeoutMs: number;
   private readonly maxRetries = 3;
-  private readonly initialRetryDelay = 1000;
+  private readonly initialRetryDelay = 30000;
 
   constructor(config?: OpenRouterConfig) {
     const defaultConfig: OpenRouterConfig = {
@@ -22,7 +22,7 @@ export class OpenRouterBackendService {
     }
 
     this.apiKey = finalConfig.apiKey;
-    this.baseUrl = finalConfig.baseUrl ?? 'https://openrouter.ai/api/chat/completions';
+    this.baseUrl = finalConfig.baseUrl ?? 'https://openrouter.ai/api/v1/chat/completions';
     this.timeoutMs = finalConfig.timeoutMs ?? 30000;
   }
 
@@ -31,7 +31,7 @@ export class OpenRouterBackendService {
       'Content-Type': 'application/json',
       'Authorization': `Bearer ${this.apiKey}`,
       'HTTP-Referer': 'https://10x-healthy-meal.com',
-      'X-Title': 'Healthy Meal App'
+      'X-Title': '10x Healthy Meal'
     };
   }
 
@@ -40,22 +40,7 @@ export class OpenRouterBackendService {
       model: options.modelName ?? 'gpt-4o-mini',
       messages,
       response_format: {
-        type: 'json_schema',
-        json_schema: {
-          name: 'chat_response_schema',
-          strict: true,
-          schema: {
-            type: 'object',
-            required: ['reply', 'sentiment'],
-            properties: {
-              reply: { type: 'string' },
-              sentiment: { 
-                type: 'string',
-                enum: ['positive', 'neutral', 'negative']
-              }
-            }
-          }
-        }
+        type: 'json_object'
       },
       parameters: options.modelParams ?? {
         temperature: 0.7,
@@ -70,6 +55,10 @@ export class OpenRouterBackendService {
         const controller = new AbortController();
         const timeoutId = setTimeout(() => controller.abort(), this.timeoutMs);
 
+        console.log('Sending request to:', this.baseUrl);
+        console.log('With headers:', this.getHeaders());
+        console.log('With payload:', JSON.stringify(payload, null, 2));
+
         const response = await fetch(this.baseUrl, {
           method: 'POST',
           headers: this.getHeaders(),
@@ -80,7 +69,9 @@ export class OpenRouterBackendService {
         clearTimeout(timeoutId);
 
         if (!response.ok) {
-          throw new Error(`HTTP error! status: ${response.status}`);
+          const errorText = await response.text();
+          console.error('Error response:', errorText);
+          throw new Error(`HTTP error! status: ${response.status}, body: ${errorText}`);
         }
 
         // Read the response body

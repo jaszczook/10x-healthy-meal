@@ -276,7 +276,7 @@ export class RecipesService {
 
       console.log(messages);
       const response = await this.openRouterService.sendChat(messages, {
-        modelName: 'meta-llama/llama-4-maverick:free',
+        modelName: 'openai/gpt-4.1',
         modelParams: {
           temperature: 0.1,
           max_tokens: 2000
