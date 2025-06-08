@@ -3,14 +3,14 @@ import { RecipeEntity } from '../../types/entities';
 import { ErrorLogService } from './error-log.service';
 import { SupabaseService } from '../supabase/supabase.service';
 import { CreateRecipeCommandModel, UpdateRecipeCommandModel } from '../../types/dto';
-import { OpenRouterService } from './openrouter/openrouter.service';
+import { OpenRouterBackendService } from './openrouter/openrouter-backend.service';
 import { ChatMessage } from '../../types/openrouter';
 
 export class RecipesService {
   constructor(
     private errorLogService: ErrorLogService,
     private supabaseService: SupabaseService,
-    private openRouterService: OpenRouterService
+    private openRouterService: OpenRouterBackendService
   ) {}
 
   async getRecipesList(
@@ -274,14 +274,16 @@ export class RecipesService {
         }
       ];
 
+      console.log(messages);
       const response = await this.openRouterService.sendChat(messages, {
-        modelName: 'anthropic/claude-3-opus-20240229',
+        modelName: 'meta-llama/llama-4-maverick:free',
         modelParams: {
           temperature: 0.1,
           max_tokens: 2000
         }
-      }).toPromise();
+      });
 
+      // console.log(response);
       if (!response) {
         throw new Error('No response from AI service');
       }

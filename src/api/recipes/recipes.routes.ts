@@ -5,19 +5,19 @@ import { RecipesService } from '../../lib/services/recipes.service';
 import { ValidationService } from '../../lib/services/validation.service';
 import { ErrorLogService } from '../../lib/services/error-log.service';
 import { SupabaseService } from '../../lib/supabase/supabase.service';
-import { OpenRouterService } from '../../lib/services/openrouter/openrouter.service';
+import { OpenRouterBackendService } from '../../lib/services/openrouter/openrouter-backend.service';
 import { authMiddleware } from '../auth/auth.middleware';
 import { validateParseRecipeCommand } from './recipes.validator';
 
 const router = Router();
 
 // Apply authentication middleware to all recipe endpoints
-router.use(authMiddleware);
+// router.use(authMiddleware);
 
 // Initialize services
 const supabaseService = new SupabaseService();
 const errorLogService = new ErrorLogService(supabaseService);
-const openRouterService = new OpenRouterService();
+const openRouterService = new OpenRouterBackendService();
 const recipesService = new RecipesService(errorLogService, supabaseService, openRouterService);
 const validationService = new ValidationService();
 

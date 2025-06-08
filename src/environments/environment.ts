@@ -3,6 +3,6 @@ export const environment = {
   supabaseUrl: process.env['SUPABASE_URL'] || '',
   supabaseKey: process.env['SUPABASE_KEY'] || '',
   testUserId: '00000000-0000-0000-0000-000000000001', // Test user ID for development
-  openRouterApiKey: '',
+  openRouterApiKey: process.env['OPENROUTER_API_KEY'] || '',
   openRouterBaseUrl: 'https://openrouter.ai/api/chat/completions'
 };
