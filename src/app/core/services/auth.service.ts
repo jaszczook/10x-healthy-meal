@@ -5,6 +5,7 @@ import { Router } from '@angular/router';
 
 interface AuthState {
   user: any | null;
+  session: any | null;
 }
 
 @Injectable({
@@ -41,11 +42,18 @@ export class AuthService {
 
   private checkSession(): Observable<AuthState> {
     return this.http.get<AuthState>('/api/auth/session').pipe(
-      tap(state => this.authStateSubject.next(state))
+      tap(state => {
+        console.log('Session check response:', state);
+        this.authStateSubject.next(state);
+      })
     );
   }
 
   isAuthenticated(): boolean {
-    return this.authStateSubject.value !== null;
+    return !!this.authStateSubject.value?.session;
+  }
+
+  getCurrentUser(): any | null {
+    return this.authStateSubject.value?.user || null;
   }
 } 

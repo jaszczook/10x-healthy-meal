@@ -5,7 +5,7 @@ import { MatSnackBar, MatSnackBarModule } from '@angular/material/snack-bar';
 import { PreferencesFormComponent } from '../../components/preferences-form/preferences-form.component';
 import { UserPreferencesDto, UserPreferencesCommandModel } from '../../../../../types/dto';
 import { PreferencesService } from '../../services/preferences.service';
-import { Subject, takeUntil } from 'rxjs';
+import { Subject, takeUntil, tap, catchError, of } from 'rxjs';
 
 @Component({
   selector: 'app-preferences-page',
@@ -40,7 +40,16 @@ export class PreferencesPageComponent implements OnInit, OnDestroy {
   private loadPreferences(): void {
     this.isLoading.set(true);
     this.preferencesService.getCurrentUserPreferences()
-      .pipe(takeUntil(this.destroy$))
+      .pipe(
+        catchError(error => {
+          // If it's a 304 response, treat it as success
+          if (error.status === 304) {
+            return of(error.error || null);
+          }
+          throw error;
+        }),
+        takeUntil(this.destroy$)
+      )
       .subscribe({
         next: (response) => {
           this.preferences.set(response);
