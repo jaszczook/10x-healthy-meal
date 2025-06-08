@@ -6,9 +6,13 @@ export const authGuard = async () => {
   const authService = inject(AuthService);
   const router = inject(Router);
 
-  const isAuthenticated = await authService.isAuthenticated();
-  if (isAuthenticated) {
-    return true;
+  try {
+    const isAuthenticated = await authService.isAuthenticated();
+    if (isAuthenticated) {
+      return true;
+    }
+  } catch (error) {
+    console.error('Auth guard error:', error);
   }
 
   // Redirect to login page

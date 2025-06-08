@@ -3,9 +3,20 @@ import { HttpClient } from '@angular/common/http';
 import { BehaviorSubject, Observable, tap, firstValueFrom } from 'rxjs';
 import { Router } from '@angular/router';
 
+interface User {
+  id: string;
+  aud: string;
+  role: string;
+  email: string;
+  email_confirmed_at: string;
+}
+
 interface AuthState {
-  user: any | null;
-  session: any | null;
+  user?: User;
+  session?: {
+    user: User;
+    access_token: string;
+  };
 }
 
 @Injectable({
@@ -18,28 +29,36 @@ export class AuthService {
   private readonly authStateSubject = new BehaviorSubject<AuthState | null>(null);
   readonly authState$ = this.authStateSubject.asObservable();
   private authInitialized = false;
+  private initializationPromise: Promise<void> | null = null;
 
   constructor() {
     this.initializeAuth();
   }
 
   private async initializeAuth() {
-    try {
-      const state = await firstValueFrom(this.checkSession());
-      this.authStateSubject.next(state);
-    } catch (error) {
-      console.error('Failed to initialize auth:', error);
-      this.authStateSubject.next(null);
-    } finally {
-      this.authInitialized = true;
+    if (this.initializationPromise) {
+      return this.initializationPromise;
     }
+
+    this.initializationPromise = (async () => {
+      try {
+        const state = await firstValueFrom(this.checkSession());
+        this.authStateSubject.next(state);
+      } catch (error) {
+        this.authStateSubject.next(null);
+      } finally {
+        this.authInitialized = true;
+      }
+    })();
+
+    return this.initializationPromise;
   }
 
   login(email: string, password: string): Observable<AuthState> {
     return this.http.post<AuthState>('/api/auth/login', { email, password }).pipe(
       tap(state => {
         this.authStateSubject.next(state);
-        this.router.navigate(['/dashboard']);
+        this.authInitialized = true;
       })
     );
   }
@@ -54,22 +73,20 @@ export class AuthService {
   }
 
   private checkSession(): Observable<AuthState> {
-    return this.http.get<AuthState>('/api/auth/session').pipe(
-      tap(state => {
-        console.log('Session check response:', state);
-        this.authStateSubject.next(state);
-      })
-    );
+    return this.http.get<AuthState>('/api/auth/session');
   }
 
   async isAuthenticated(): Promise<boolean> {
     if (!this.authInitialized) {
       await this.initializeAuth();
     }
-    return !!this.authStateSubject.value?.session;
+    const state = this.authStateSubject.value;
+    const user = state?.user || state?.session?.user;
+    return !!user && user.role === 'authenticated';
   }
 
-  getCurrentUser(): any | null {
-    return this.authStateSubject.value?.user || null;
+  getCurrentUser(): User | null {
+    const state = this.authStateSubject.value;
+    return state?.user || state?.session?.user || null;
   }
 } 
