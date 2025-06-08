@@ -5,7 +5,7 @@ import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
 import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
-import { RecipeFormViewModel, UserPreferencesDto } from '../../../../../types/dto';
+import { RecipeFormViewModel, StepDto, UserPreferencesDto } from '../../../../../types/dto';
 import { IngredientsListComponent } from './ingredients-list/ingredients-list.component';
 import { StepsListComponent } from './steps-list/steps-list.component';
 
@@ -32,7 +32,12 @@ export class RecipeFormComponent {
   @Input() set formData(value: RecipeFormViewModel) {
     this.form.patchValue(value);
     this.ingredients.set(value.ingredients);
-    this.steps.set(value.steps);
+    if (value.steps && value.steps.length > 0) {
+      this.steps.set(value.steps.map((step, index) => ({
+        description: step.description,
+        order: step.order || index + 1
+      })));
+    }
   }
 
   @Input() set userPreferences(value: UserPreferencesDto) {
@@ -47,7 +52,7 @@ export class RecipeFormComponent {
   });
 
   ingredients = signal<RecipeFormViewModel['ingredients']>([]);
-  steps = signal<RecipeFormViewModel['steps']>([]);
+  steps = signal<StepDto[]>([]);
 
   get userPreferences(): UserPreferencesDto | null {
     return this._userPreferences();
@@ -58,7 +63,7 @@ export class RecipeFormComponent {
     this.emitFormData();
   }
 
-  onStepsChange(steps: RecipeFormViewModel['steps']): void {
+  onStepsChange(steps: StepDto[]): void {
     this.steps.set(steps);
     this.emitFormData();
   }
@@ -73,7 +78,10 @@ export class RecipeFormComponent {
     const formData: RecipeFormViewModel = {
       ...this.form.value,
       ingredients: this.ingredients(),
-      steps: this.steps()
+      steps: this.steps().map((step, index) => ({
+        description: step.description,
+        order: index + 1
+      }))
     } as RecipeFormViewModel;
     
     this.formDataChange.emit(formData);

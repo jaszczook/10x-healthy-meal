@@ -42,7 +42,20 @@ export class IngredientsListComponent {
 
   displayedColumns: string[] = ['name', 'amount', 'unit', 'actions'];
 
-  units = ['g', 'kg', 'ml', 'l', 'sztuka', 'łyżka', 'łyżeczka', 'szklanka'];
+  units = [
+    // Weight - Metric
+    'g', 'kg',
+    // Weight - Imperial
+    'oz', 'lb',
+    // Volume - Metric
+    'ml', 'l',
+    // Volume - Imperial
+    'fl oz', 'cup', 'pint', 'quart', 'gallon',
+    // Common measurements
+    'tbsp', 'tsp', 'piece', 'pinch',
+    // Other
+    'whole', 'slice', 'clove', 'bunch', 'can', 'jar'
+  ];
 
   addIngredient(): void {
     const newIngredient: IngredientViewModel = {

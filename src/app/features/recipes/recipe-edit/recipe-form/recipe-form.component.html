@@ -1,12 +1,12 @@
 <form [formGroup]="form" (ngSubmit)="onSubmit()">
   <mat-form-field appearance="outline" class="full-width">
-    <mat-label>Tytuł przepisu</mat-label>
-    <input matInput formControlName="title" placeholder="Wprowadź tytuł przepisu">
+    <mat-label>Recipe Title</mat-label>
+    <input matInput formControlName="title" placeholder="Enter recipe title">
     @if (form.get('title')?.hasError('required')) {
-      <mat-error>Tytuł jest wymagany</mat-error>
+      <mat-error>Title is required</mat-error>
     }
     @if (form.get('title')?.hasError('minlength')) {
-      <mat-error>Tytuł musi mieć minimum 3 znaki</mat-error>
+      <mat-error>Title must be at least 3 characters long</mat-error>
     }
   </mat-form-field>
 
@@ -22,7 +22,7 @@
   ></app-steps-list>
 
   <mat-form-field appearance="outline" class="full-width">
-    <mat-label>Notatki</mat-label>
-    <textarea matInput formControlName="notes" rows="4" placeholder="Dodaj notatki do przepisu"></textarea>
+    <mat-label>Notes</mat-label>
+    <textarea matInput formControlName="notes" rows="4" placeholder="Add recipe notes"></textarea>
   </mat-form-field>
 </form> 
