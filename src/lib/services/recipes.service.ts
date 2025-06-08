@@ -265,7 +265,7 @@ export class RecipesService {
     }
   }
 
-  async parseRecipe(req: Request, recipeText: string): Promise<RecipeDetailDto> {
+  async parseRecipe(req: Request, recipeText: string): Promise<ParsedRecipeDto> {
     const { user } = await this.authService.getSession(req);
     if (!user) {
       throw new Error('Unauthorized');
@@ -326,13 +326,7 @@ export class RecipesService {
       const parsedContent = response.reply;
       this.validateParsedRecipe(parsedContent);
 
-      // Create new recipe with parsed data
-      const createRecipeCommand: CreateRecipeCommandModel = {
-        title: parsedContent.title,
-        recipe_data: parsedContent.recipe_data
-      };
-
-      return await this.createRecipe(req, createRecipeCommand);
+      return parsedContent;
     } catch (error) {
       // Log the error
       await this.errorLogService.logError(user.id, {

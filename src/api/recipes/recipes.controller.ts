@@ -243,7 +243,7 @@ export class RecipesApiController {
     }
   }
 
-  async parseRecipe(req: Request, recipeText: string): Promise<RecipeDetailDto> {
+  async parseRecipe(req: Request, recipeText: string): Promise<ParsedRecipeDto> {
     try {
       // Verify user is authenticated
       await this.supabaseService.getCurrentUserId();
