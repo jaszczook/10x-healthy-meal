@@ -1,12 +1,13 @@
-import { Component, inject, signal } from '@angular/core';
+import { Component, inject, signal, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { MatStepperModule } from '@angular/material/stepper';
 import { MatButtonModule } from '@angular/material/button';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { ActivatedRoute, Router } from '@angular/router';
-import { RecipeDetailDto, RecipeFormViewModel, ValidationResultDto, UserPreferencesDto, RecipeSummaryViewModel } from '../../../../types/dto';
+import { RecipeDetailDto, RecipeFormViewModel, ValidationResultDto, UserPreferencesDto, RecipeSummaryViewModel, IngredientViewModel, StepViewModel } from '../../../../types/dto';
 import { RecipeFormComponent } from './recipe-form/recipe-form.component';
 import { RecipeSummaryComponent } from './recipe-summary/recipe-summary.component';
+import { RecipeService } from '../services/recipe.service';
 
 @Component({
   selector: 'app-recipe-edit-view',
@@ -21,10 +22,11 @@ import { RecipeSummaryComponent } from './recipe-summary/recipe-summary.componen
   templateUrl: './recipe-edit-view.component.html',
   styleUrl: './recipe-edit-view.component.scss'
 })
-export class RecipeEditViewComponent {
+export class RecipeEditViewComponent implements OnInit {
   private route = inject(ActivatedRoute);
   private router = inject(Router);
   private snackBar = inject(MatSnackBar);
+  private recipeService = inject(RecipeService);
 
   // State signals
   formData = signal<RecipeFormViewModel>({
@@ -50,21 +52,109 @@ export class RecipeEditViewComponent {
 
   isEditMode = signal(true);
   isLoading = signal(false);
+  recipeId = signal<string | null>(null);
 
-  constructor() {
-    // TODO: Initialize component with route data
+  ngOnInit(): void {
+    this.recipeId.set(this.route.snapshot.paramMap.get('id'));
+    if (this.recipeId()) {
+      this.loadRecipe();
+    }
+  }
+
+  private loadRecipe(): void {
+    if (!this.recipeId()) return;
+    
+    this.isLoading.set(true);
+    this.recipeService.getRecipe(this.recipeId()!).subscribe({
+      next: (recipe) => {
+        // Convert DTO to ViewModel
+        const ingredients: IngredientViewModel[] = recipe.recipe_data.ingredients.map(ing => ({
+          ...ing,
+          isAllergen: false // Default value, can be updated based on user preferences
+        }));
+
+        const steps: StepViewModel[] = recipe.recipe_data.steps.map((step, index) => ({
+          description: step.description,
+          order: index + 1
+        }));
+
+        this.formData.set({
+          title: recipe.title,
+          ingredients,
+          steps,
+          notes: recipe.recipe_data.notes || '',
+          calories: recipe.recipe_data.calories || 0
+        });
+        this.updateSummary();
+      },
+      error: (error) => {
+        this.snackBar.open('Failed to load recipe', 'Close', { duration: 3000 });
+        this.router.navigate(['/recipes']);
+      },
+      complete: () => {
+        this.isLoading.set(false);
+      }
+    });
   }
 
   onFormDataChange(data: RecipeFormViewModel): void {
     this.formData.set(data);
-    // TODO: Update summary
+    this.updateSummary();
+  }
+
+  private updateSummary(): void {
+    this.summary.set({
+      totalCalories: this.formData().calories || 0,
+      ingredients: this.formData().ingredients
+    });
   }
 
   onSave(): void {
-    // TODO: Implement save logic
+    if (!this.recipeId()) return;
+
+    this.isLoading.set(true);
+    const formData = this.formData();
+
+    // Convert ViewModel back to DTO format
+    const recipeData = {
+      title: formData.title,
+      recipe_data: {
+        ingredients: formData.ingredients.map(({ isAllergen, ...ing }) => ing), // Remove isAllergen field
+        steps: formData.steps.map(({ order, ...step }) => step), // Remove order field
+        notes: formData.notes,
+        calories: formData.calories
+      }
+    };
+
+    // First validate the recipe
+    this.recipeService.validateRecipe(this.recipeId()!, recipeData).subscribe({
+      next: (validationResult) => {
+        if (!validationResult.valid) {
+          this.snackBar.open('Recipe validation failed', 'Close', { duration: 5000 });
+          this.isLoading.set(false);
+          return;
+        }
+
+        // If validation passes, update the recipe
+        this.recipeService.updateRecipe(this.recipeId()!, recipeData).subscribe({
+          next: () => {
+            this.snackBar.open('Recipe updated successfully', 'Close', { duration: 3000 });
+            this.router.navigate(['/recipes', this.recipeId()]);
+          },
+          error: (error) => {
+            this.snackBar.open('Failed to update recipe', 'Close', { duration: 3000 });
+            this.isLoading.set(false);
+          }
+        });
+      },
+      error: (error) => {
+        this.snackBar.open('Failed to validate recipe', 'Close', { duration: 3000 });
+        this.isLoading.set(false);
+      }
+    });
   }
 
   onCancel(): void {
-    // TODO: Implement cancel logic
+    this.router.navigate(['/recipes', this.recipeId()]);
   }
 } 

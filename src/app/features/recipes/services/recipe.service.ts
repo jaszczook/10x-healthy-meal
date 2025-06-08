@@ -2,14 +2,15 @@ import { Injectable, inject } from '@angular/core';
 import { HttpClient, HttpErrorResponse } from '@angular/common/http';
 import { Observable, throwError } from 'rxjs';
 import { catchError } from 'rxjs/operators';
-import { ParseRecipeCommandModel, ParsedRecipeDto, RecipeDetailDto } from '../../../../types/dto';
+import { ParseRecipeCommandModel, ParsedRecipeDto, RecipeDetailDto, ValidationResultDto } from '../../../../types/dto';
+import { environment } from '../../../../environments/environment';
 
 @Injectable({
   providedIn: 'root'
 })
 export class RecipeService {
-  private readonly http = inject(HttpClient);
-  private readonly apiUrl = '/api/recipes';
+  private http = inject(HttpClient);
+  private apiUrl = `/api/recipes`;
 
   parseRecipe(command: ParseRecipeCommandModel): Observable<ParsedRecipeDto> {
     return this.http.post<ParsedRecipeDto>(`${this.apiUrl}/parse`, command).pipe(
@@ -27,6 +28,14 @@ export class RecipeService {
     return this.http.delete<void>(`${this.apiUrl}/${id}`).pipe(
       catchError(this.handleError)
     );
+  }
+
+  updateRecipe(id: string, recipe: Partial<RecipeDetailDto>): Observable<RecipeDetailDto> {
+    return this.http.put<RecipeDetailDto>(`${this.apiUrl}/${id}`, recipe);
+  }
+
+  validateRecipe(id: string, recipe: Partial<RecipeDetailDto>): Observable<ValidationResultDto> {
+    return this.http.post<ValidationResultDto>(`${this.apiUrl}/${id}/validate`, recipe);
   }
 
   private handleError(error: HttpErrorResponse) {
