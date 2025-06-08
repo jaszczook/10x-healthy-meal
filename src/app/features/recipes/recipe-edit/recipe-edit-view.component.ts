@@ -8,6 +8,7 @@ import { RecipeDetailDto, RecipeFormViewModel, ValidationResultDto, UserPreferen
 import { RecipeFormComponent } from './recipe-form/recipe-form.component';
 import { RecipeSummaryComponent } from './recipe-summary/recipe-summary.component';
 import { RecipeService } from '../services/recipe.service';
+import { PreferencesService } from '../../preferences/services/preferences.service';
 
 @Component({
   selector: 'app-recipe-edit-view',
@@ -27,6 +28,7 @@ export class RecipeEditViewComponent implements OnInit {
   private router = inject(Router);
   private snackBar = inject(MatSnackBar);
   private recipeService = inject(RecipeService);
+  private preferencesService = inject(PreferencesService);
 
   // State signals
   formData = signal<RecipeFormViewModel>({
@@ -56,9 +58,22 @@ export class RecipeEditViewComponent implements OnInit {
 
   ngOnInit(): void {
     this.recipeId.set(this.route.snapshot.paramMap.get('id'));
+    this.loadUserPreferences();
     if (this.recipeId()) {
       this.loadRecipe();
     }
+  }
+
+  private loadUserPreferences(): void {
+    this.preferencesService.getCurrentUserPreferences().subscribe({
+      next: (preferences) => {
+        this.userPreferences.set(preferences);
+      },
+      error: (error) => {
+        console.error('Failed to load user preferences:', error);
+        this.snackBar.open('Failed to load user preferences', 'Close', { duration: 3000 });
+      }
+    });
   }
 
   private loadRecipe(): void {
