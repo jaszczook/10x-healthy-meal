@@ -101,7 +101,7 @@ export class RecipeDetailsComponent implements OnInit {
 
     this.recipeService.deleteRecipe(recipe.id).subscribe({
       next: () => {
-        this.router.navigate(['/recipes']);
+        this.router.navigate(['/dashboard']);
       },
       error: (error: Error) => {
         this.error.set(error.message);

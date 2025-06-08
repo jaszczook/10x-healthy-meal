@@ -197,7 +197,7 @@ export class RecipeEditViewComponent implements OnInit {
     };
 
     // Check if we're creating a new recipe or updating existing one
-    if (this.route.snapshot.url[2]?.path === 'new') {
+    if (!this.recipeId()) {
       // Create new recipe
       this.recipeService.createRecipe(recipeData).subscribe({
         next: (response) => {
@@ -209,7 +209,7 @@ export class RecipeEditViewComponent implements OnInit {
           this.isLoading.set(false);
         }
       });
-    } else if (this.recipeId()) {
+    } else {
       // Update existing recipe
       this.recipeService.updateRecipe(this.recipeId()!, recipeData).subscribe({
         next: (response) => {
