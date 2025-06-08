@@ -5,7 +5,9 @@ import { RecipesService } from '../../lib/services/recipes.service';
 import { ValidationService } from '../../lib/services/validation.service';
 import { ErrorLogService } from '../../lib/services/error-log.service';
 import { SupabaseService } from '../../lib/supabase/supabase.service';
+import { OpenRouterService } from '../../lib/services/openrouter/openrouter.service';
 import { authMiddleware } from '../auth/auth.middleware';
+import { validateParseRecipeCommand } from './recipes.validator';
 
 const router = Router();
 
@@ -15,7 +17,8 @@ router.use(authMiddleware);
 // Initialize services
 const supabaseService = new SupabaseService();
 const errorLogService = new ErrorLogService(supabaseService);
-const recipesService = new RecipesService(errorLogService, supabaseService);
+const openRouterService = new OpenRouterService();
+const recipesService = new RecipesService(errorLogService, supabaseService, openRouterService);
 const validationService = new ValidationService();
 
 // Initialize controller and resolver
@@ -67,6 +70,27 @@ router.post('/', async (req, res) => {
     if (error instanceof Error) {
       if (error.message === '401 Unauthorized') {
         res.status(401).json({ error: 'Not authenticated' });
+      } else if (error.message.startsWith('400')) {
+        res.status(400).json({ error: error.message.replace('400 ', '') });
+      } else {
+        res.status(500).json({ error: 'Internal Server Error' });
+      }
+    } else {
+      res.status(500).json({ error: 'Internal Server Error' });
+    }
+  }
+});
+
+router.post('/parse', validateParseRecipeCommand, async (req, res) => {
+  try {
+    const result = await controller.parseRecipe(req.body.recipe_text);
+    res.json(result);
+  } catch (error) {
+    if (error instanceof Error) {
+      if (error.message === '401 Unauthorized') {
+        res.status(401).json({ error: 'Not authenticated' });
+      } else if (error.message === '408 Request Timeout') {
+        res.status(408).json({ error: 'AI processing timed out after 60 seconds' });
       } else if (error.message.startsWith('400')) {
         res.status(400).json({ error: error.message.replace('400 ', '') });
       } else {

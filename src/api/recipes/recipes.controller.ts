@@ -5,6 +5,7 @@ import { RecipesListResponseDto, RecipeDetailDto, UpdateRecipeCommandModel, Reci
 import { SupabaseService } from '../../lib/supabase/supabase.service';
 import { CreateRecipeCommandModel } from '../../types/dto';
 import { ValidationResultDto } from '../../types/dto';
+import { ParsedRecipeDto } from '../../types/dto';
 
 export class RecipesApiController {
   constructor(
@@ -253,6 +254,48 @@ export class RecipesApiController {
         }
         if (error.message.startsWith('400')) {
           throw error; // Keep the 400 error message as is
+        }
+      }
+      throw new Error('500 Internal Server Error');
+    }
+  }
+
+  async parseRecipe(recipeText: string): Promise<ParsedRecipeDto> {
+    try {
+      // Verify user is authenticated
+      await this.supabaseService.getCurrentUserId();
+
+      // Validate recipe text
+      if (!recipeText || recipeText.trim().length === 0) {
+        throw new Error('400 Recipe text cannot be empty');
+      }
+
+      // Parse recipe using the service
+      return await this.recipesService.parseRecipe(recipeText);
+    } catch (error) {
+      // Log error with enhanced context
+      await this.errorLogService.logError('parseRecipe', {
+        message: error instanceof Error ? error.message : 'Unknown error during recipe parsing',
+        type: 'PARSING_ERROR',
+        details: {
+          error: error instanceof Error ? {
+            name: error.name,
+            message: error.message,
+            stack: error.stack
+          } : error
+        }
+      });
+
+      // Rethrow with appropriate status code
+      if (error instanceof Error) {
+        if (error.message === 'Not authenticated') {
+          throw new Error('401 Unauthorized');
+        }
+        if (error.message.startsWith('400')) {
+          throw error; // Keep the 400 error message as is
+        }
+        if (error.message.includes('timeout')) {
+          throw new Error('408 Request Timeout');
         }
       }
       throw new Error('500 Internal Server Error');

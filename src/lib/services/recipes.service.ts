@@ -1,13 +1,16 @@
-import { RecipeListItemDto, RecipesListResponseDto, RecipeDetailDto, RecipeDataDto } from '../../types/dto';
+import { RecipeListItemDto, RecipesListResponseDto, RecipeDetailDto, RecipeDataDto, ParsedRecipeDto } from '../../types/dto';
 import { RecipeEntity } from '../../types/entities';
 import { ErrorLogService } from './error-log.service';
 import { SupabaseService } from '../supabase/supabase.service';
 import { CreateRecipeCommandModel, UpdateRecipeCommandModel } from '../../types/dto';
+import { OpenRouterService } from './openrouter/openrouter.service';
+import { ChatMessage } from '../../types/openrouter';
 
 export class RecipesService {
   constructor(
     private errorLogService: ErrorLogService,
-    private supabaseService: SupabaseService
+    private supabaseService: SupabaseService,
+    private openRouterService: OpenRouterService
   ) {}
 
   async getRecipesList(
@@ -231,6 +234,122 @@ export class RecipesService {
       // Log error
       await this.errorLogService.logError(userId, error);
       throw error;
+    }
+  }
+
+  async parseRecipe(recipeText: string): Promise<ParsedRecipeDto> {
+    try {
+      const messages: ChatMessage[] = [
+        {
+          role: 'system',
+          content: `You are a recipe parsing assistant. Your task is to analyze the provided recipe text and extract structured information.
+          Return the data in the following JSON format:
+          {
+            "title": "Recipe title",
+            "recipe_data": {
+              "ingredients": [
+                {"name": "ingredient name", "amount": number, "unit": "unit name"}
+              ],
+              "steps": [
+                {"description": "step description"}
+              ],
+              "notes": "optional notes",
+              "calories": number
+            }
+          }
+          
+          Guidelines:
+          - Extract the recipe title
+          - Parse ingredients with amounts and units
+          - Break down preparation steps
+          - Include any notes or tips
+          - Estimate total calories if possible
+          - Ensure all amounts are numeric values
+          - Use standard units (g, kg, ml, l, tsp, tbsp, cup, etc.)
+          - Return valid JSON only, no additional text`
+        },
+        {
+          role: 'user',
+          content: recipeText
+        }
+      ];
+
+      const response = await this.openRouterService.sendChat(messages, {
+        modelName: 'anthropic/claude-3-opus-20240229',
+        modelParams: {
+          temperature: 0.1,
+          max_tokens: 2000
+        }
+      }).toPromise();
+
+      if (!response) {
+        throw new Error('No response from AI service');
+      }
+
+      const parsedContent = JSON.parse(response.reply);
+      this.validateParsedRecipe(parsedContent);
+
+      return parsedContent;
+    } catch (error) {
+      // Log the error
+      await this.errorLogService.logError('parseRecipe', {
+        message: error instanceof Error ? error.message : 'Unknown error during AI processing',
+        type: 'AI_ERROR',
+        details: {
+          error: error instanceof Error ? {
+            name: error.name,
+            message: error.message,
+            stack: error.stack
+          } : error
+        }
+      });
+
+      // Handle specific error cases
+      if (error instanceof Error) {
+        if (error.message.includes('timeout')) {
+          throw new Error('timeout');
+        }
+        if (error.message.includes('OpenRouter API error')) {
+          throw new Error('500 AI service error');
+        }
+      }
+      throw error;
+    }
+  }
+
+  private validateParsedRecipe(parsed: any): void {
+    if (!parsed || typeof parsed !== 'object') {
+      throw new Error('Invalid AI response format');
+    }
+
+    if (!parsed.title || typeof parsed.title !== 'string') {
+      throw new Error('Invalid recipe title in AI response');
+    }
+
+    if (!parsed.recipe_data || typeof parsed.recipe_data !== 'object') {
+      throw new Error('Invalid recipe data in AI response');
+    }
+
+    const { ingredients, steps } = parsed.recipe_data;
+
+    if (!Array.isArray(ingredients) || !Array.isArray(steps)) {
+      throw new Error('Invalid ingredients or steps format in AI response');
+    }
+
+    // Validate ingredients
+    for (const ingredient of ingredients) {
+      if (!ingredient.name || typeof ingredient.name !== 'string' ||
+          typeof ingredient.amount !== 'number' ||
+          !ingredient.unit || typeof ingredient.unit !== 'string') {
+        throw new Error('Invalid ingredient format in AI response');
+      }
+    }
+
+    // Validate steps
+    for (const step of steps) {
+      if (!step.description || typeof step.description !== 'string') {
+        throw new Error('Invalid step format in AI response');
+      }
     }
   }
 
