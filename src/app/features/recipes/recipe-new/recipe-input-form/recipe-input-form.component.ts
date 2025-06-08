@@ -25,23 +25,23 @@ export class RecipeInputFormComponent {
   @Output() onSubmit = new EventEmitter<string>();
 
   recipeText = `
-Składniki:
+Ingredients:
 
-2 szklanki mleka (500 ml)
-1 szklanka mąki pszennej (ok. 150 g)
-2 jajka
-szczypta soli
-1 łyżka oleju (lub roztopionego masła) + odrobina do smażenia
-(opcjonalnie) 1 łyżeczka cukru – jeśli mają być na słodko
-Wykonanie:
+2 cups of milk (500 ml)
+1 cup of wheat flour (about 150 g)
+2 eggs
+a pinch of salt
+1 tablespoon of oil (or melted butter) + a bit for frying
+(optional) 1 teaspoon of sugar - if you want them sweet
+Instructions:
 
-W misce roztrzep jajka z mlekiem.
-Dodaj mąkę, sól (i ewentualnie cukier), dokładnie wymieszaj trzepaczką lub mikserem, aż ciasto będzie gładkie – bez grudek.
-Dodaj łyżkę oleju i ponownie wymieszaj.
-Odstaw ciasto na 10–15 minut (opcjonalne, ale ciasto lepiej się „zwiąże”).
-Rozgrzej dobrze patelnię (najlepiej teflonową lub naleśnikową), lekko natłuść ją olejem lub masłem.
-Wylewaj cienką warstwę ciasta na patelnię, rozprowadzaj równomiernie ruchem okrężnym.
-Smaż około 1–2 minuty z każdej strony – aż się lekko zarumieni.
+In a bowl, whisk eggs with milk.
+Add flour, salt (and sugar if desired), mix thoroughly with a whisk or mixer until the batter is smooth - without lumps.
+Add a tablespoon of oil and mix again.
+Let the batter rest for 10-15 minutes (optional, but the batter will bind better).
+Heat a pan well (preferably non-stick or crepe pan), lightly grease it with oil or butter.
+Pour a thin layer of batter onto the pan, spread it evenly with a circular motion.
+Fry for about 1-2 minutes on each side - until lightly browned.
   `;
 
   handleSubmit() {

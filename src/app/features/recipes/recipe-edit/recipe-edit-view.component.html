@@ -1,7 +1,7 @@
 <div class="recipe-edit-container">
   <mat-stepper [linear]="true">
     <mat-step>
-      <ng-template matStepLabel>Edycja przepisu</ng-template>
+      <ng-template matStepLabel>Edit Recipe</ng-template>
       <app-recipe-form
         [formData]="formData()"
         [userPreferences]="userPreferences()"
@@ -9,7 +9,7 @@
       ></app-recipe-form>
     </mat-step>
     <mat-step>
-      <ng-template matStepLabel>Podsumowanie</ng-template>
+      <ng-template matStepLabel>Summary</ng-template>
       <app-recipe-summary
         [summary]="summary()"
         [userPreferences]="userPreferences()"
@@ -18,7 +18,7 @@
   </mat-stepper>
 
   <div class="actions">
-    <button mat-button (click)="onCancel()">Anuluj</button>
-    <button mat-raised-button color="primary" (click)="onSave()">Zapisz</button>
+    <button mat-button (click)="onCancel()">Cancel</button>
+    <button mat-raised-button color="primary" (click)="onSave()">Save</button>
   </div>
 </div> 
