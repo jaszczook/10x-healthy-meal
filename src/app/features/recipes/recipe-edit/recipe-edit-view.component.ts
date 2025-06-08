@@ -4,7 +4,7 @@ import { MatStepperModule, MatStepper } from '@angular/material/stepper';
 import { MatButtonModule } from '@angular/material/button';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { ActivatedRoute, Router } from '@angular/router';
-import { RecipeDetailDto, RecipeFormViewModel, ValidationResultDto, UserPreferencesDto, RecipeSummaryViewModel, IngredientViewModel, StepViewModel, RecipeDataDto } from '../../../../types/dto';
+import { RecipeDetailDto, RecipeFormViewModel, ValidationResultDto, UserPreferencesDto, RecipeSummaryViewModel, IngredientViewModel, StepViewModel, RecipeDataDto, ParsedRecipeDto } from '../../../../types/dto';
 import { RecipeFormComponent } from './recipe-form/recipe-form.component';
 import { RecipeSummaryComponent } from './recipe-summary/recipe-summary.component';
 import { RecipeService } from '../services/recipe.service';
@@ -61,7 +61,12 @@ export class RecipeEditViewComponent implements OnInit {
   ngOnInit(): void {
     this.recipeId.set(this.route.snapshot.paramMap.get('id'));
     this.loadUserPreferences();
-    if (this.recipeId()) {
+    
+    // Check if we have a parsed recipe in the router state
+    const parsedRecipe = history.state?.parsedRecipe;
+    if (parsedRecipe) {
+      this.handleParsedRecipe(parsedRecipe);
+    } else if (this.recipeId()) {
       this.loadRecipe();
     }
   }
@@ -114,6 +119,31 @@ export class RecipeEditViewComponent implements OnInit {
     });
   }
 
+  private handleParsedRecipe(parsedRecipe: ParsedRecipeDto): void {
+    // Convert parsed recipe to form data
+    const ingredients: IngredientViewModel[] = parsedRecipe.recipe_data.ingredients.map((ing: { name: string; amount: number; unit: string }) => ({
+      name: ing.name,
+      amount: ing.amount,
+      unit: ing.unit,
+      isAllergen: false // Default value, can be updated based on user preferences
+    }));
+
+    const steps: StepViewModel[] = parsedRecipe.recipe_data.steps.map((step: { description: string }, index: number) => ({
+      description: step.description,
+      order: index + 1
+    }));
+
+    this.formData.set({
+      title: parsedRecipe.title,
+      ingredients,
+      steps,
+      notes: parsedRecipe.recipe_data.notes || '',
+      calories: parsedRecipe.recipe_data.calories || 0
+    });
+
+    this.updateSummary();
+  }
+
   onFormDataChange(data: RecipeFormViewModel): void {
     this.formData.set(data);
     this.updateSummary();
@@ -154,8 +184,6 @@ export class RecipeEditViewComponent implements OnInit {
   }
 
   onSave(): void {
-    if (!this.recipeId()) return;
-
     this.isLoading.set(true);
     const formData = this.formData();
 
@@ -168,17 +196,32 @@ export class RecipeEditViewComponent implements OnInit {
       }
     };
 
-    // Update the recipe directly
-    this.recipeService.updateRecipe(this.recipeId()!, recipeData).subscribe({
-      next: (response) => {
-        this.snackBar.open('Recipe updated successfully', 'Close', { duration: 3000 });
-        this.router.navigate(['/recipes', this.recipeId()]);
-      },
-      error: (error) => {
-        this.snackBar.open('Failed to update recipe', 'Close', { duration: 3000 });
-        this.isLoading.set(false);
-      }
-    });
+    // Check if we're creating a new recipe or updating existing one
+    if (this.route.snapshot.url[2]?.path === 'new') {
+      // Create new recipe
+      this.recipeService.createRecipe(recipeData).subscribe({
+        next: (response) => {
+          this.snackBar.open('Recipe created successfully', 'Close', { duration: 3000 });
+          this.router.navigate(['/recipes', response.id]);
+        },
+        error: (error) => {
+          this.snackBar.open('Failed to create recipe', 'Close', { duration: 3000 });
+          this.isLoading.set(false);
+        }
+      });
+    } else if (this.recipeId()) {
+      // Update existing recipe
+      this.recipeService.updateRecipe(this.recipeId()!, recipeData).subscribe({
+        next: (response) => {
+          this.snackBar.open('Recipe updated successfully', 'Close', { duration: 3000 });
+          this.router.navigate(['/recipes', this.recipeId()]);
+        },
+        error: (error) => {
+          this.snackBar.open('Failed to update recipe', 'Close', { duration: 3000 });
+          this.isLoading.set(false);
+        }
+      });
+    }
   }
 
   onSaveError(error: string): void {
