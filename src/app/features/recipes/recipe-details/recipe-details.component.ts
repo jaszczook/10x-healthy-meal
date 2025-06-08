@@ -70,6 +70,13 @@ export class RecipeDetailsComponent implements OnInit {
     });
   }
 
+  navigateToEdit() {
+    const recipe = this.recipe();
+    if (!recipe) return;
+    
+    this.router.navigate(['/recipes/edit', recipe.id]);
+  }
+
   openDeleteDialog() {
     const recipe = this.recipe();
     if (!recipe) return;
