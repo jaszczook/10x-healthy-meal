@@ -1,4 +1,4 @@
-import { Component, EventEmitter, Input, Output, inject, signal } from '@angular/core';
+import { Component, EventEmitter, Input, Output, inject, signal, OnInit, OnDestroy } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
 import { MatFormFieldModule } from '@angular/material/form-field';
@@ -9,7 +9,7 @@ import { RecipeFormViewModel, StepDto, UserPreferencesDto, RecipeDetailDto, Crea
 import { IngredientsListComponent } from './ingredients-list/ingredients-list.component';
 import { StepsListComponent } from './steps-list/steps-list.component';
 import { RecipeService } from '../../services/recipe.service';
-import { firstValueFrom } from 'rxjs';
+import { firstValueFrom, Subscription } from 'rxjs';
 
 @Component({
   selector: 'app-recipe-form',
@@ -27,13 +27,15 @@ import { firstValueFrom } from 'rxjs';
   templateUrl: './recipe-form.component.html',
   styleUrl: './recipe-form.component.scss'
 })
-export class RecipeFormComponent {
+export class RecipeFormComponent implements OnInit, OnDestroy {
   private fb = inject(FormBuilder);
   private recipeService = inject(RecipeService);
   private _userPreferences = signal<UserPreferencesDto | null>(null);
+  private formSubscription?: Subscription;
+  private isUpdatingFromParent = false;
 
   @Input() set formData(value: RecipeFormViewModel) {
-    this.isUpdating = true;
+    this.isUpdatingFromParent = true;
     this.form.patchValue(value);
     this.ingredients.set(value.ingredients);
     if (value.steps && value.steps.length > 0) {
@@ -42,7 +44,7 @@ export class RecipeFormComponent {
         order: step.order || index + 1
       })));
     }
-    this.isUpdating = false;
+    this.isUpdatingFromParent = false;
   }
 
   @Input() set userPreferences(value: UserPreferencesDto) {
@@ -60,29 +62,42 @@ export class RecipeFormComponent {
 
   ingredients = signal<RecipeFormViewModel['ingredients']>([]);
   steps = signal<StepDto[]>([]);
-  private isUpdating = false;
-
-  constructor() {
-    // Subscribe to form value changes
-    this.form.valueChanges.subscribe(() => {
-      if (!this.isUpdating) {
-        this.emitFormData();
-      }
-    });
-  }
 
   get userPreferences(): UserPreferencesDto | null {
     return this._userPreferences();
   }
 
+  ngOnInit(): void {
+    this.formSubscription = this.form.valueChanges.subscribe(() => {
+      if (!this.isUpdatingFromParent) {
+        this.formDataChange.emit(this.getFormData());
+      }
+    });
+  }
+
+  ngOnDestroy(): void {
+    this.formSubscription?.unsubscribe();
+  }
+
   onIngredientsChange(ingredients: RecipeFormViewModel['ingredients']): void {
     this.ingredients.set(ingredients);
-    this.emitFormData();
+    this.formDataChange.emit(this.getFormData());
   }
 
   onStepsChange(steps: StepDto[]): void {
     this.steps.set(steps);
-    this.emitFormData();
+    this.formDataChange.emit(this.getFormData());
+  }
+
+  private getFormData(): RecipeFormViewModel {
+    return {
+      ...this.form.value,
+      ingredients: this.ingredients(),
+      steps: this.steps().map((step, index) => ({
+        description: step.description,
+        order: index + 1
+      }))
+    } as RecipeFormViewModel;
   }
 
   async onSubmit(): Promise<void> {
@@ -104,20 +119,5 @@ export class RecipeFormComponent {
         this.saveError.emit(error instanceof Error ? error.message : 'Failed to save recipe');
       }
     }
-  }
-
-  private getFormData(): RecipeFormViewModel {
-    return {
-      ...this.form.value,
-      ingredients: this.ingredients(),
-      steps: this.steps().map((step, index) => ({
-        description: step.description,
-        order: index + 1
-      }))
-    } as RecipeFormViewModel;
-  }
-
-  private emitFormData(): void {
-    this.formDataChange.emit(this.getFormData());
   }
 } 

@@ -107,7 +107,6 @@ export class RecipeEditViewComponent implements OnInit {
       ...data,
       calories
     }));
-    this.updateSummary();
   }
 
   private updateSummary(): void {
@@ -144,20 +143,21 @@ export class RecipeEditViewComponent implements OnInit {
       recipe_data: this.getRecipeData()
     };
 
-    console.log('Sending update with data:', recipeData); // Debug log
-
     // Update the recipe directly
     this.recipeService.updateRecipe(this.recipeId()!, recipeData).subscribe({
       next: (response) => {
-        console.log('Update response:', response); // Debug log
         this.snackBar.open('Recipe updated successfully', 'Close', { duration: 3000 });
         this.router.navigate(['/recipes', this.recipeId()]);
       },
       error: (error) => {
-        console.error('Update error:', error); // Debug log
         this.snackBar.open('Failed to update recipe', 'Close', { duration: 3000 });
         this.isLoading.set(false);
       }
     });
+  }
+
+  onSaveError(error: string): void {
+    this.snackBar.open(error, 'Close', { duration: 3000 });
+    this.isLoading.set(false);
   }
 } 

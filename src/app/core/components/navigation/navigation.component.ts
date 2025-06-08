@@ -1,5 +1,5 @@
 import { Component, inject } from '@angular/core';
-import { RouterLink, RouterLinkActive, Router } from '@angular/router';
+import { RouterLink, Router } from '@angular/router';
 import { MatTabsModule } from '@angular/material/tabs';
 import { MatToolbarModule } from '@angular/material/toolbar';
 import { MatButtonModule } from '@angular/material/button';
@@ -18,8 +18,7 @@ import { AuthService } from '../../services/auth.service';
     MatButtonModule,
     MatIconModule,
     MatMenuModule,
-    RouterLink,
-    RouterLinkActive
+    RouterLink
   ],
   template: `
     <mat-toolbar color="primary" *ngIf="isLoggedIn$ | async">

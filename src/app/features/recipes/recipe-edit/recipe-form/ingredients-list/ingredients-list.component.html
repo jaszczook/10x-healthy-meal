@@ -1,4 +1,4 @@
-<div class="ingredients-container">
+<div class="ingredients-container" #ingredientsTable>
   <div class="section-header">
     <h3>Ingredients</h3>
     <button mat-raised-button color="primary" (click)="addIngredient()">
@@ -46,9 +46,11 @@
           <mat-select 
             [value]="ingredient.unit"
             (selectionChange)="updateIngredient(i, 'unit', $event.value)">
-            <mat-option *ngFor="let unit of units" [value]="unit">
-              {{ unit }}
-            </mat-option>
+            @for (unit of units; track unit) {
+              <mat-option [value]="unit">
+                {{ unit }}
+              </mat-option>
+            }
           </mat-select>
         </mat-form-field>
       </mat-cell>
@@ -71,7 +73,9 @@
     <mat-row *matRowDef="let row; columns: displayedColumns;"></mat-row>
   </mat-table>
 
-  <div *ngIf="ingredients.length === 0" class="empty-state">
-    <p>No ingredients added. Add your first ingredient.</p>
-  </div>
+  @if (ingredients.length === 0) {
+    <div class="empty-state">
+      <p>No ingredients added. Add your first ingredient.</p>
+    </div>
+  }
 </div> 

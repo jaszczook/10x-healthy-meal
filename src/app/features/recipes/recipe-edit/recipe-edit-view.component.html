@@ -6,6 +6,8 @@
         [formData]="formData()"
         [userPreferences]="userPreferences()"
         (formDataChange)="onFormDataChange($event)"
+        (saveSuccess)="onSave()"
+        (saveError)="onSaveError($event)"
       ></app-recipe-form>
     </mat-step>
 

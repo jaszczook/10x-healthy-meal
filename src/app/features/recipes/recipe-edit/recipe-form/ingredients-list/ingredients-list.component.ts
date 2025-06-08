@@ -1,4 +1,4 @@
-import { Component, EventEmitter, Input, Output, signal } from '@angular/core';
+import { Component, EventEmitter, Input, Output } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { MatTableModule } from '@angular/material/table';
 import { MatButtonModule } from '@angular/material/button';
@@ -26,60 +26,41 @@ import { IngredientViewModel, UserPreferencesDto } from '../../../../../../types
   styleUrl: './ingredients-list.component.scss'
 })
 export class IngredientsListComponent {
-  @Input() set ingredients(value: IngredientViewModel[]) {
-    this._ingredients.set(value);
-  }
-
   @Input() userPreferences: UserPreferencesDto | null = null;
-
+  @Input() set ingredients(value: IngredientViewModel[]) {
+    this._ingredients = value;
+  }
   @Output() ingredientsChange = new EventEmitter<IngredientViewModel[]>();
 
-  private _ingredients = signal<IngredientViewModel[]>([]);
-  
-  get ingredients() {
-    return this._ingredients();
+  private _ingredients: IngredientViewModel[] = [];
+  get ingredients(): IngredientViewModel[] {
+    return this._ingredients;
   }
-
   displayedColumns: string[] = ['name', 'amount', 'unit', 'actions'];
 
   units = [
-    // Weight - Metric
-    'g', 'kg',
-    // Weight - Imperial
-    'oz', 'lb',
-    // Volume - Metric
-    'ml', 'l',
-    // Volume - Imperial
-    'fl oz', 'cup', 'pint', 'quart', 'gallon',
-    // Common measurements
-    'tbsp', 'tsp', 'piece', 'pinch',
-    // Other
-    'whole', 'slice', 'clove', 'bunch', 'can', 'jar'
+    'g', 'kg', 'oz', 'lb', 'ml', 'l', 'fl oz', 'cup', 'pint', 'quart', 'gallon',
+    'tbsp', 'tsp', 'piece', 'pinch', 'whole', 'slice', 'clove', 'bunch', 'can', 'jar'
   ];
 
   addIngredient(): void {
-    const newIngredient: IngredientViewModel = {
+    this.ingredients.push({
       name: '',
       amount: 0,
       unit: 'g',
       isAllergen: false
-    };
-    
-    const updatedIngredients = [...this._ingredients(), newIngredient];
-    this._ingredients.set(updatedIngredients);
-    this.ingredientsChange.emit(updatedIngredients);
+    });
+    this.ingredientsChange.emit(this.ingredients);
   }
 
   removeIngredient(index: number): void {
-    const updatedIngredients = this._ingredients().filter((_, i) => i !== index);
-    this._ingredients.set(updatedIngredients);
-    this.ingredientsChange.emit(updatedIngredients);
+    if (this.ingredients.length <= 1) return;
+    this.ingredients.splice(index, 1);
+    this.ingredientsChange.emit(this.ingredients);
   }
 
-  updateIngredient(index: number, field: keyof IngredientViewModel, value: any): void {
-    const updatedIngredients = [...this._ingredients()];
-    updatedIngredients[index] = { ...updatedIngredients[index], [field]: value };
-    this._ingredients.set(updatedIngredients);
-    this.ingredientsChange.emit(updatedIngredients);
+  updateIngredient(index: number, field: keyof IngredientViewModel, value: string | number | boolean): void {
+    (this.ingredients[index] as any)[field] = value;
+    this.ingredientsChange.emit(this.ingredients);
   }
 } 
