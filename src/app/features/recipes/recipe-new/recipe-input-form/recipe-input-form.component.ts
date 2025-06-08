@@ -25,23 +25,11 @@ export class RecipeInputFormComponent {
   @Output() onSubmit = new EventEmitter<string>();
 
   recipeText = `
-Ingredients:
+To make simple crepes, just grab about two cups of milk and mix it with two eggs in a bowl. Slowly add in a cup of all-purpose flour, a pinch of salt, and if you’re going for a sweet version, maybe a teaspoon of sugar too. Mix everything well—use a whisk or a hand mixer until the batter is smooth and lump-free. Then stir in a tablespoon of oil or melted butter to make the crepes easier to flip and prevent sticking. Let the batter rest for 10 to 15 minutes if you have time—it helps the texture.
 
-2 cups of milk (500 ml)
-1 cup of wheat flour (about 150 g)
-2 eggs
-a pinch of salt
-1 tablespoon of oil (or melted butter) + a bit for frying
-(optional) 1 teaspoon of sugar - if you want them sweet
-Instructions:
+Heat up a non-stick or crepe pan over medium heat, brush it lightly with some oil or butter, and pour in just enough batter to coat the bottom when you swirl the pan. Cook the crepe for about a minute or two until it starts to get golden underneath, then flip it and cook the other side briefly.
 
-In a bowl, whisk eggs with milk.
-Add flour, salt (and sugar if desired), mix thoroughly with a whisk or mixer until the batter is smooth - without lumps.
-Add a tablespoon of oil and mix again.
-Let the batter rest for 10-15 minutes (optional, but the batter will bind better).
-Heat a pan well (preferably non-stick or crepe pan), lightly grease it with oil or butter.
-Pour a thin layer of batter onto the pan, spread it evenly with a circular motion.
-Fry for about 1-2 minutes on each side - until lightly browned.
+You can fill them with whatever you like—sweet stuff like jam, Nutella, or fruits, or go savory with things like cheese, spinach, or mushrooms. They’re super versatile and easy to make once you get the hang of it.
   `;
 
   handleSubmit() {

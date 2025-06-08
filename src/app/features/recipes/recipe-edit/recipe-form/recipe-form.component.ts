@@ -80,17 +80,21 @@ export class RecipeFormComponent implements OnInit, OnDestroy {
   }
 
   onIngredientsChange(ingredients: RecipeFormViewModel['ingredients']): void {
-    this.ingredients.set(ingredients);
-    this.formDataChange.emit(this.getFormData());
+    if (!this.isUpdatingFromParent) {
+      this.ingredients.set(ingredients);
+      this.formDataChange.emit(this.getFormData());
+    }
   }
 
   onStepsChange(steps: StepDto[]): void {
-    this.steps.set(steps);
-    this.formDataChange.emit(this.getFormData());
+    if (!this.isUpdatingFromParent) {
+      this.steps.set(steps);
+      this.formDataChange.emit(this.getFormData());
+    }
   }
 
   private getFormData(): RecipeFormViewModel {
-    return {
+    const formData = {
       ...this.form.value,
       ingredients: this.ingredients(),
       steps: this.steps().map((step, index) => ({
@@ -99,6 +103,7 @@ export class RecipeFormComponent implements OnInit, OnDestroy {
       })),
       calories: this._formData?.calories || 0
     } as RecipeFormViewModel;
+    return formData;
   }
 
   async onSubmit(): Promise<void> {

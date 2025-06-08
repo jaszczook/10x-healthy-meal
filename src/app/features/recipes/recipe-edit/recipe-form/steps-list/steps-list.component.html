@@ -10,9 +10,7 @@
   <mat-table [dataSource]="steps" class="steps-table">
     <ng-container matColumnDef="order">
       <mat-header-cell *matHeaderCellDef>Step</mat-header-cell>
-      <mat-cell *matCellDef="let step; let i = index">
-        <div class="step-number">{{ step.order }}</div>
-      </mat-cell>
+      <mat-cell *matCellDef="let step; let i = index">{{ i + 1 }}</mat-cell>
     </ng-container>
 
     <ng-container matColumnDef="description">
@@ -21,12 +19,11 @@
         <mat-form-field appearance="outline" class="full-width">
           <input 
             matInput 
-            [value]="step.description"
-            #descInput
-            (input)="updateStep(i, descInput.value)"
+            [formControl]="getFormControl(i)"
+            (input)="onStepChange(i)"
             placeholder="Describe the preparation step"
             required>
-          @if (!step.description) {
+          @if (!getFormControl(i).value) {
             <mat-error>Step description is required</mat-error>
           }
         </mat-form-field>
@@ -36,30 +33,13 @@
     <ng-container matColumnDef="actions">
       <mat-header-cell *matHeaderCellDef>Actions</mat-header-cell>
       <mat-cell *matCellDef="let step; let i = index">
-        <div class="step-actions">
-          <button 
-            mat-icon-button 
-            (click)="moveStep(i, 'up')"
-            [disabled]="i === 0"
-            matTooltip="Move up">
-            <mat-icon>keyboard_arrow_up</mat-icon>
-          </button>
-          <button 
-            mat-icon-button 
-            (click)="moveStep(i, 'down')"
-            [disabled]="i === steps.length - 1"
-            matTooltip="Move down">
-            <mat-icon>keyboard_arrow_down</mat-icon>
-          </button>
-          <button 
-            mat-icon-button 
-            color="warn" 
-            (click)="removeStep(i)"
-            [disabled]="steps.length <= 1"
-            matTooltip="Delete step">
-            <mat-icon>delete</mat-icon>
-          </button>
-        </div>
+        <button 
+          mat-icon-button 
+          color="warn" 
+          (click)="removeStep(i)"
+          [disabled]="steps.length <= 1">
+          <mat-icon>delete</mat-icon>
+        </button>
       </mat-cell>
     </ng-container>
 

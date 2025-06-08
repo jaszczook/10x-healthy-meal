@@ -17,38 +17,6 @@
 .steps-table {
   width: 100%;
   margin-bottom: 16px;
-
-  ::ng-deep {
-    .mat-mdc-header-cell.mat-column-order {
-      width: 80px;
-      flex: 0 0 80px;
-    }
-
-    .mat-mdc-header-cell.mat-column-description {
-      flex: 1 1 auto;
-    }
-
-    .mat-mdc-header-cell.mat-column-actions {
-      width: 160px;
-      flex: 0 0 160px;
-      padding-right: 16px;
-    }
-
-    .mat-mdc-cell.mat-column-order {
-      width: 80px;
-      flex: 0 0 80px;
-    }
-
-    .mat-mdc-cell.mat-column-description {
-      flex: 1 1 auto;
-    }
-
-    .mat-mdc-cell.mat-column-actions {
-      width: 160px;
-      flex: 0 0 160px;
-      padding-right: 16px;
-    }
-  }
 }
 
 .full-width {
