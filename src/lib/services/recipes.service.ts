@@ -274,7 +274,7 @@ export class RecipesService {
         }
       ];
 
-      console.log(messages);
+      console.log('Sending messages to OpenRouter:', JSON.stringify(messages, null, 2));
       const response = await this.openRouterService.sendChat(messages, {
         modelName: 'openai/gpt-4.1',
         modelParams: {
@@ -283,12 +283,14 @@ export class RecipesService {
         }
       });
 
-      // console.log(response);
+      console.log('Received response from OpenRouter:', JSON.stringify(response, null, 2));
+
       if (!response) {
         throw new Error('No response from AI service');
       }
 
-      const parsedContent = JSON.parse(response.reply);
+      // The response.reply is already parsed JSON from OpenRouterBackendService
+      const parsedContent = response.reply;
       this.validateParsedRecipe(parsedContent);
 
       return parsedContent;

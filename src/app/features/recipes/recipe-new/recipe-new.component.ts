@@ -59,9 +59,9 @@ export class RecipeNewComponent {
 
   private handleSuccess(result: ParsedRecipeDto) {
     this.isProcessing.set(false);
-    this.router.navigate(['/recipes', 'edit'], { 
-      state: { parsedRecipe: result }
-    });
+    // this.router.navigate(['/recipes', 'edit'], { 
+    //   state: { parsedRecipe: result }
+    // });
   }
 
   private handleError(error: Error) {

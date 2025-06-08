@@ -15,7 +15,7 @@ export interface ChatOptions {
 }
 
 export interface ChatResponse {
-  reply: string;
+  reply: any;
   sentiment: 'positive' | 'neutral' | 'negative';
 }
 

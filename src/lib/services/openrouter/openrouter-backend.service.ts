@@ -1,5 +1,6 @@
 import { environment } from '../../../environments/environment';
 import { OpenRouterConfig, ChatMessage, ChatOptions, ChatResponse, OpenRouterError } from '../../../types/openrouter';
+import { ParsedRecipeDto } from '../../../types/dto';
 
 export class OpenRouterBackendService {
   private readonly apiKey: string;
@@ -116,27 +117,60 @@ export class OpenRouterBackendService {
     throw new OpenRouterError('Unexpected error', 'UNKNOWN', undefined, lastError);
   }
 
-  private validateResponse(response: any): ChatResponse {
-    if (!response?.choices?.[0]?.message?.content) {
-      throw new OpenRouterError('Invalid response format from OpenRouter API');
+  private validateResponse(data: any): ChatResponse {
+    console.log('Validating response:', JSON.stringify(data, null, 2));
+
+    if (!data || typeof data !== 'object') {
+      throw new OpenRouterError('Invalid response format', 'INVALID_RESPONSE');
+    }
+
+    // Extract the content from the message
+    const message = data.choices?.[0]?.message?.content;
+    if (!message) {
+      throw new OpenRouterError('No message content in response', 'INVALID_RESPONSE');
     }
 
     try {
-      const content = JSON.parse(response.choices[0].message.content);
+      // Parse the content as JSON since it's a stringified JSON
+      const parsedContent = JSON.parse(message);
       
-      if (typeof content.reply !== 'string' || 
-          !['positive', 'neutral', 'negative'].includes(content.sentiment)) {
-        throw new Error('Invalid response schema');
+      // Validate the parsed content matches ParsedRecipeDto structure
+      if (!parsedContent.title || typeof parsedContent.title !== 'string') {
+        throw new OpenRouterError('Invalid recipe title in response', 'INVALID_RESPONSE');
       }
 
-      return content as ChatResponse;
-    } catch (error) {
-      throw new OpenRouterError(
-        'Failed to parse OpenRouter API response',
-        'INVALID_RESPONSE',
-        undefined,
-        error
-      );
+      if (!parsedContent.recipe_data || typeof parsedContent.recipe_data !== 'object') {
+        throw new OpenRouterError('Invalid recipe data in response', 'INVALID_RESPONSE');
+      }
+
+      const { ingredients, steps } = parsedContent.recipe_data;
+
+      if (!Array.isArray(ingredients) || !Array.isArray(steps)) {
+        throw new OpenRouterError('Invalid ingredients or steps format in response', 'INVALID_RESPONSE');
+      }
+
+      // Validate ingredients
+      for (const ingredient of ingredients) {
+        if (!ingredient.name || typeof ingredient.name !== 'string' ||
+            typeof ingredient.amount !== 'number' ||
+            !ingredient.unit || typeof ingredient.unit !== 'string') {
+          throw new OpenRouterError('Invalid ingredient format in response', 'INVALID_RESPONSE');
+        }
+      }
+
+      // Validate steps
+      for (const step of steps) {
+        if (!step.description || typeof step.description !== 'string') {
+          throw new OpenRouterError('Invalid step format in response', 'INVALID_RESPONSE');
+        }
+      }
+
+      return {
+        reply: parsedContent as ParsedRecipeDto,
+        sentiment: 'positive' // Since we're getting a valid response, we can assume it's positive
+      };
+    } catch (e) {
+      throw new OpenRouterError('Failed to parse message content as JSON', 'INVALID_JSON', undefined, e);
     }
   }
 } 
