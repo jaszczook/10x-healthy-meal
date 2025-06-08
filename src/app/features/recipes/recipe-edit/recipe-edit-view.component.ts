@@ -128,7 +128,12 @@ export class RecipeEditViewComponent implements OnInit {
   }
 
   onCancel(): void {
-    this.router.navigate(['/recipes']);
+    const id = this.recipeId();
+    if (id) {
+      this.router.navigate(['/recipes', id]);
+    } else {
+      this.router.navigate(['/dashboard']);
+    }
   }
 
   onSave(): void {
