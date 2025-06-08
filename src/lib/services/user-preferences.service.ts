@@ -12,15 +12,24 @@ export class UserPreferencesService {
     private readonly supabaseService: SupabaseService
   ) {}
 
-  async getCurrentUserPreferences(): Promise<UserPreferencesDto> {
+  async getCurrentUserPreferences(): Promise<UserPreferencesDto | null> {
     try {
+      const { data: { user } } = await this.supabaseService.client.auth.getUser();
+      console.log(user);
+      if (!user) {
+        return null;
+      }
+
       const { data, error } = await this.supabaseService.client
         .from('user_preferences')
         .select('*')
-        .limit(1)
+        .eq('user_id', user.id)
         .single();
 
       if (error) {
+        if (error.code === 'PGRST116') { // No rows returned
+          return null;
+        }
         throw error;
       }
 

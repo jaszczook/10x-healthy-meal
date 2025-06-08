@@ -15,10 +15,22 @@ export class UserPreferencesApiController {
   async getCurrentUserPreferences(): Promise<UserPreferencesDto> {
     try {
       // Verify user is authenticated
-      await this.supabaseService.getCurrentUserId();
+      const userId = await this.supabaseService.getCurrentUserId();
 
       // Get preferences using the service
-      return await this.userPreferencesService.getCurrentUserPreferences();
+      const preferences = await this.userPreferencesService.getCurrentUserPreferences();
+      
+      // If no preferences exist, create default preferences
+      if (!preferences) {
+        const defaultPreferences: UserPreferencesCommandModel = {
+          allergies: [],
+          intolerances: [],
+          target_calories: null
+        };
+        return await this.userPreferencesService.upsertPreferences(userId, defaultPreferences);
+      }
+
+      return preferences;
     } catch (error) {
       // Log error
       await this.errorLogService.logError('getCurrentUserPreferences', error);
