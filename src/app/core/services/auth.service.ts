@@ -1,6 +1,6 @@
 import { inject, Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
-import { BehaviorSubject, Observable, tap } from 'rxjs';
+import { BehaviorSubject, Observable, tap, firstValueFrom } from 'rxjs';
 import { Router } from '@angular/router';
 
 interface AuthState {
@@ -17,9 +17,22 @@ export class AuthService {
   
   private readonly authStateSubject = new BehaviorSubject<AuthState | null>(null);
   readonly authState$ = this.authStateSubject.asObservable();
+  private authInitialized = false;
 
   constructor() {
-    this.checkSession().subscribe();
+    this.initializeAuth();
+  }
+
+  private async initializeAuth() {
+    try {
+      const state = await firstValueFrom(this.checkSession());
+      this.authStateSubject.next(state);
+    } catch (error) {
+      console.error('Failed to initialize auth:', error);
+      this.authStateSubject.next(null);
+    } finally {
+      this.authInitialized = true;
+    }
   }
 
   login(email: string, password: string): Observable<AuthState> {
@@ -49,7 +62,10 @@ export class AuthService {
     );
   }
 
-  isAuthenticated(): boolean {
+  async isAuthenticated(): Promise<boolean> {
+    if (!this.authInitialized) {
+      await this.initializeAuth();
+    }
     return !!this.authStateSubject.value?.session;
   }
 

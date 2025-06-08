@@ -21,7 +21,7 @@ export const routes: Routes = [
   {
     path: 'preferences',
     loadComponent: () => import('./features/preferences/pages/preferences-page/preferences-page.component').then(m => m.PreferencesPageComponent),
-    // TODO: Add AuthGuard
+    canActivate: [authGuard]
   },
   {
     path: 'recipes',

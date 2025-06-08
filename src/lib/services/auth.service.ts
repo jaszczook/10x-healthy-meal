@@ -28,7 +28,11 @@ export class AuthService {
   }
 
   async getSession(req: Request) {
+    console.log(req.url);
+    console.log(req.method);
+    console.log(req.cookies);
     const accessToken = req.cookies['sb-access-token'];
+    console.log(accessToken);
     if (!accessToken) {
       console.log('No access token found in cookies');
       throw new Error('No access token found in cookies');

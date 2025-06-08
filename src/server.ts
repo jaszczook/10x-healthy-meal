@@ -23,9 +23,11 @@ const angularApp = new AngularNodeAppEngine();
 // Enable CORS for Angular development server
 app.use(cors({
   origin: 'http://localhost:4200',
-  methods: ['GET', 'POST', 'PUT', 'DELETE', 'PATCH'],
+  methods: ['GET', 'POST', 'PUT', 'DELETE', 'PATCH', 'OPTIONS'],
   allowedHeaders: ['Content-Type', 'Authorization'],
-  credentials: true
+  credentials: true,
+  preflightContinue: false,
+  optionsSuccessStatus: 204
 }));
 
 // Parse cookies
