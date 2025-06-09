@@ -44,7 +44,8 @@ export class RecipeNewComponent {
       const result = await firstValueFrom(this.recipeService.parseRecipe(command));
       this.handleSuccess(result);
     } catch (err: unknown) {
-      this.handleError(err instanceof Error ? err : new Error('Unknown error occurred'));
+      const errorMessage = err instanceof Error ? err.message : 'Failed to parse recipe';
+      this.handleError(new Error(errorMessage));
     }
   }
 
