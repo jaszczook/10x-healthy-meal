@@ -1,20 +1,22 @@
 <div class="recipe-new-container">
   @if (!isProcessing()) {
     <app-recipe-input-form
+      data-testid="recipe-input-form"
       [isProcessing]="isProcessing()"
       (onSubmit)="handleSubmit($event)"
     />
   } @else {
-    <mat-card>
+    <mat-card data-testid="processing-card">
       <mat-card-content>
         <h2>Processing Recipe</h2>
         <p>Please wait while we analyze your recipe...</p>
-        <mat-progress-bar mode="indeterminate"></mat-progress-bar>
+        <mat-progress-bar mode="indeterminate" data-testid="progress-bar"></mat-progress-bar>
       </mat-card-content>
       <mat-card-actions align="end">
         <button
           mat-button
           color="warn"
+          data-testid="cancel-button"
           (click)="handleCancel()"
         >
           Cancel
