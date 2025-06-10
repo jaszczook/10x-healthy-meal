@@ -5,6 +5,7 @@
     "ng": "ng",
     "start": "dotenv -e .env -- ng serve",
     "build": "dotenv -e .env -- ng build",
+    "build:ci": "ng build",
     "watch": "dotenv -e .env -- ng build --watch --configuration development",
     "test": "ng test --browsers=ChromeHeadless --watch=false",
     "test:watch": "ng test --browsers=ChromeHeadless",
